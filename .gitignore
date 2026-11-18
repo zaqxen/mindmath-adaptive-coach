@@ -1,0 +1,7 @@
+# Local test files and generated previews
+_*.py
+_*.js
+_*.html
+_*.png
+*.log
+.DS_Store
