@@ -79,7 +79,11 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
   <div class="celebration" id="sessionRewards" aria-live="polite"></div>
   <div class="actions" style="justify-content:center"><button class="button" id="backBtn" type="button">Back to dashboard</button></div>
 </section>
-</main>
+<section class="card" style="margin-top:24px;padding:24px">
+<h2>Speed & accuracy lab</h2><p>Measure 1–4 digit arithmetic with a repeatable 32-question test. Each operation has eight questions. Timing includes reading and entering your answer. Switching tabs interrupts the question and excludes the test from progress comparisons.</p>
+<button class="button" id="speedStart">Take speed test</button> <button class="button ghost" id="speedStats">My stats & levels</button>
+<p id="speedStatus" role="status"></p><form id="speedForm" hidden><h3 id="speedQuestion"></h3><label>Answer <input id="speedAnswer" type="text" inputmode="numeric" autocomplete="off" required></label><button class="button">Check & continue</button><button type="button" id="speedSkip">Skip</button><button type="button" id="speedCancel">Cancel test</button></form><div id="speedReport"></div>
+<details><summary>Targets and research</summary><p>These are training targets, not population percentiles or age, occupation or IQ assessments. Digit count alone does not predict difficulty. Carrying, tables, strategy, presentation and typing affect time. Multiplication uses a 1–4 digit number × a single digit; division reverses those products. Addition and subtraction use two numbers of the selected length.</p><p>Targets in seconds for 1 / 2 / 3 / 4 digits: addition 6 / 12 / 20 / 30; subtraction 6 / 14 / 24 / 36; multiplication 6 / 16 / 28 / 45; division 6 / 18 / 32 / 50. These provisional targets support consistent personal comparison. No comparable adult norms were established for this test.</p><p><a href="https://home.xtramath.org/support/what-are-the-timer-options-and-how-do-they-benefit-students" target="_blank" rel="noopener">XtraMath uses a six-second basic-fact proficiency target</a>. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6542658/" target="_blank" rel="noopener">Arithmetic research distinguishes calculation, decision and response stages</a>. Laboratory verification times cannot be treated as norms for typed answers here.</p><p>Ranks are game achievements: Foundations, Developing, Fluent, Expert and Genius Quest. They describe performance on this test only. Repeat the same test format several times before interpreting a trend.</p></details></section></main>
 <section class="card below" aria-labelledby="trophyTitle"><div class="row"><h2 id="trophyTitle">🏆 Trophy cabinet</h2><span class="trophy-count" id="trophyCount">0 / 12 earned</span></div><p class="small" style="margin-top:6px">Little milestones for real learning. Trophies stay unlocked, even if a skill level drops for review.</p><div id="trophyGrid" class="badge-grid"></div></section>
 <section class="card below"><div class="row"><h2>Your skills</h2><span class="small">Levels 1–8</span></div><div class="skills" id="skills" style="margin-top:14px"></div>
 <details><summary>Technique tracker — 15 specific skills</summary><div class="details"><p id="trackerIntro">Your mistakes, speed, and use of hints identify which methods deserve extra practice.</p><div id="microList" class="micro-list"></div></div></details>
@@ -120,6 +124,8 @@ function cleanHistory(arr,withTopic=false){if(!Array.isArray(arr))return [];retu
 function sanitize(x){
   if(!x||![1,2,3].includes(x.version)||!x.skills||!x.days||typeof x.days!=='object'||Array.isArray(x.days))throw Error('Invalid backup');
   const d=fresh();
+  d.speedTests=Array.isArray(x.speedTests)?x.speedTests.filter(t=>t&&typeof t.date==='string'&&Array.isArray(t.rows)&&t.rows.length===32&&t.rows.every(r=>['Addition','Subtraction','Multiplication','Division'].includes(r.skill)&&Number.isInteger(r.digits)&&r.digits>=1&&r.digits<=4&&Number.isFinite(r.seconds)&&r.seconds>=0&&Number.isFinite(r.target)&&r.target>0&&typeof r.correct==='boolean')).slice(-40):[];
+
   for(const n of NAMES){const s=x.skills[n];if(!s||typeof s!=='object')continue;d.skills[n]={level:clamp(Math.floor(Number(s.level)||1),1,8),history:cleanHistory(s.history,true),attempts:clamp(Math.floor(Number(s.attempts)||0),0,1e9),correct:0};d.skills[n].correct=clamp(Math.floor(Number(s.correct)||0),0,d.skills[n].attempts)}
   if(x.version>=2&&x.topics&&typeof x.topics==='object')for(const id of IDS){const t=x.topics[id];if(!t||typeof t!=='object')continue;d.topics[id]={history:cleanHistory(t.history).slice(-16),attempts:clamp(Math.floor(Number(t.attempts)||0),0,1e9),correct:0};d.topics[id].correct=clamp(Math.floor(Number(t.correct)||0),0,d.topics[id].attempts)}
   for(const [date,v] of Object.entries(x.days)){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&v&&Number.isFinite(v.total)&&Number.isFinite(v.correct)){const total=clamp(Math.floor(v.total),0,MAX_Q);d.days[date]={total,correct:clamp(Math.floor(v.correct),0,total)}}}
@@ -297,6 +303,12 @@ function chooseTopic(){
   const s=data.session,previous=s.results.at(-1);
   // One immediate coached retry after an error, capped to avoid frustration.
   if(previous&&!previous.correct&&previous.topic&&recentCount(previous.topic)<3)return previous.topic;
+  const measured=(data.speedTests||[]).at(-1);
+  if(measured&&s.results.length%3===1){
+    const scores=NAMES.filter(n=>n!=='Percentages').map(skill=>({skill,score:measured.rows.filter(r=>r.skill===skill).reduce((sum,r)=>sum+(r.correct?Math.min(1,r.target/Math.max(.1,r.seconds)):0),0)})).sort((a,b)=>a.score-b.score);
+    const topics=IDS.filter(id=>TOPICS[id].skill===scores[0].skill&&recentCount(id)<3);
+    if(topics.length)return pick(topics);
+  }
   const focus=weakest();
   if(focus&&recentCount(focus)<4&&(s.results.length%3===0||s.results.length===0))return focus;
   const candidates=IDS.filter(id=>!(focus&&id===focus&&recentCount(id)>=4));
@@ -447,6 +459,99 @@ $('resetBtn').addEventListener('click',()=>{if(!confirm('Delete all progress sav
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopClock();else if(!$('quizView').classList.contains('hidden'))resumeClock()});window.addEventListener('pagehide',stopClock);
 // Stale previous-day session becomes an ordinary completed day; no extra hidden work is credited.
 if(data.session&&data.session.date!==today()){const r=data.session.results;if(r.length)data.days[data.session.date]={total:r.length,correct:r.filter(x=>x.correct).length};data.session=null;save()}
+const speedTargets={Addition:[6,12,20,30],Subtraction:[6,14,24,36],Multiplication:[6,16,28,45],Division:[6,18,32,50]};
+let speedRun=null,speedStarted=0;
+function speedScore(rows){
+  return Math.round(100*rows.reduce((sum,r)=>sum+(r.correct?Math.min(1,r.target/Math.max(.1,r.seconds)):0),0)/rows.length);
+}
+function speedRank(score){
+  return score>=95?'Genius Quest':score>=85?'Expert':score>=70?'Fluent':score>=45?'Developing':'Foundations';
+}
+function speedRender(){
+  const box=$('speedReport');box.replaceChildren();
+  const tests=data.speedTests||[];
+  if(!tests.length){box.textContent='Complete a test to establish your baseline.';return}
+  const test=tests.at(-1);
+  const title=document.createElement('h3');
+  title.textContent=speedRank(speedScore(test.rows))+' · '+speedScore(test.rows)+'/100 speed-and-accuracy score';
+  box.append(title);
+  const explanation=document.createElement('p');
+  explanation.textContent='Incorrect and skipped answers score zero. Correct answers earn up to 100% of their target-time score. Two samples per digit band are provisional. Most recent test: '+new Date(test.date).toLocaleString();
+  box.append(explanation);
+  for(const skill of Object.keys(speedTargets)){
+    const rows=test.rows.filter(r=>r.skill===skill),score=speedScore(rows);
+    const h=document.createElement('h4');h.textContent=skill+' · '+speedRank(score);
+    const meter=document.createElement('meter');meter.min=0;meter.max=100;meter.value=score;meter.style.width='100%';meter.setAttribute('aria-label',skill+' speed and accuracy score '+score);
+    const info=document.createElement('p');
+    info.textContent=score+'/100 · '+rows.filter(r=>r.correct).length+'/8 correct';
+    box.append(h,meter,info);
+    for(let digits=1;digits<=4;digits++){
+      const band=rows.filter(r=>r.digits===digits),correct=band.filter(r=>r.correct);
+      const p=document.createElement('p');
+      p.textContent=digits+'-digit band · '+correct.length+'/2 correct · '+(correct.length?(correct.reduce((a,r)=>a+r.seconds,0)/correct.length).toFixed(1)+'s mean correct time':'no correct time')+' · target '+speedTargets[skill][digits-1]+'s';
+      box.append(p);
+    }
+    const tips={Addition:'Make a ten, then add chunks. 48 + 27 = 48 + 20 + 7 = 75.',Subtraction:'Round and compensate. 83 − 29 = 83 − 30 + 1 = 54.',Multiplication:'Split the number. 24 × 7 = 20 × 7 + 4 × 7 = 168.',Division:'Reverse multiplication or split exact chunks. 96 ÷ 6 = 60 ÷ 6 + 36 ÷ 6 = 16.'};
+    const tip=document.createElement('p');tip.textContent=(score<70?'Practice focus. ':'Keep sharpening. ')+tips[skill];box.append(tip);
+  }
+  const h=document.createElement('h3');h.textContent='Your test history';box.append(h);
+  tests.slice(-10).forEach((t,i)=>{
+    const label=document.createElement('p');label.textContent=new Date(t.date).toLocaleDateString()+' · '+speedScore(t.rows)+'/100 · '+Math.round(t.rows.filter(r=>r.correct).length/32*100)+'% accuracy';
+    const bar=document.createElement('meter');bar.min=0;bar.max=100;bar.value=speedScore(t.rows);bar.style.width='100%';bar.setAttribute('aria-label',label.textContent);box.append(label,bar);
+  });
+  if(tests.length>1){
+    const delta=speedScore(test.rows)-speedScore(tests[0].rows);
+    const p=document.createElement('p');p.textContent='Change from baseline: '+(delta>=0?'+':'')+delta+' score points on the same balanced test format. Daily practice will prioritize your lowest-scoring operation.';box.append(p);
+  }
+}
+function speedNext(){
+  const q=speedRun.questions[speedRun.rows.length];
+  $('speedStatus').textContent='Question '+(speedRun.rows.length+1)+' / 32 · '+q.skill+' · target '+q.target+'s';
+  $('speedQuestion').textContent=q.text;
+  $('speedAnswer').value='';$('speedAnswer').focus();
+  speedStarted=performance.now();
+}
+$('speedStart').addEventListener('click',()=>{
+  if(speedRun)return;
+  if(data.session){$('speedStatus').textContent='Finish your daily practice before starting a separate assessment.';return}
+  const questions=[];
+  for(let digits=1;digits<=4;digits++){
+    for(const skill of Object.keys(speedTargets)){
+      for(let repeat=0;repeat<2;repeat++){
+        const low=digits===1?2:10**(digits-1),high=10**digits-1;
+        let a=rand(low,high),b=rand(low,high),answer,text;
+        if(skill==='Addition'){answer=a+b;text=a+' + '+b}
+        if(skill==='Subtraction'){if(a<b)[a,b]=[b,a];answer=a-b;text=a+' − '+b}
+        if(skill==='Multiplication'){b=rand(2,9);answer=a*b;text=a+' × '+b}
+        if(skill==='Division'){b=rand(2,9);answer=a;text=(a*b)+' ÷ '+b}
+        questions.push({skill,digits,answer,text,target:speedTargets[skill][digits-1]});
+      }
+    }
+  }
+  speedRun={questions,rows:[],interrupted:false};$('speedForm').hidden=false;$('speedReport').replaceChildren();$('startBtn').disabled=true;speedNext();
+});
+function speedSubmit(skip){
+  if(!speedRun)return;
+  const raw=$('speedAnswer').value.trim();
+  if(!skip&&!/^-?\d+$/.test(raw)){$('speedAnswer').setCustomValidity('Enter a whole number.');$('speedAnswer').reportValidity();return}
+  const q=speedRun.questions[speedRun.rows.length];
+  speedRun.rows.push({skill:q.skill,digits:q.digits,target:q.target,seconds:(performance.now()-speedStarted)/1000,correct:!skip&&Number(raw)===q.answer});
+  if(speedRun.rows.length<32){speedNext();return}
+  $('speedForm').hidden=true;
+  if(speedRun.interrupted){$('speedStatus').textContent='Test interrupted by leaving the tab. Retake for a comparable result.'}
+  else{
+    data.speedTests=[...(data.speedTests||[]),{date:new Date().toISOString(),rows:speedRun.rows}].slice(-40);save();
+    $('speedStatus').textContent='Assessment complete. Your weakest operation will receive extra daily practice.';speedRender();
+  }
+  speedRun=null;render();
+}
+$('speedForm').addEventListener('submit',e=>{e.preventDefault();speedSubmit(false)});
+$('speedAnswer').addEventListener('input',()=>$('speedAnswer').setCustomValidity(''));
+$('speedSkip').addEventListener('click',()=>speedSubmit(true));
+$('speedCancel').addEventListener('click',()=>{speedRun=null;$('speedForm').hidden=true;$('speedStatus').textContent='Test cancelled. No result saved.';render()});
+$('speedStats').addEventListener('click',speedRender);
+document.addEventListener('visibilitychange',()=>{if(speedRun&&document.hidden)speedRun.interrupted=true});
+
 buildLibrary();render();
 })();
 </script>
