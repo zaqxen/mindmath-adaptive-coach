@@ -32,18 +32,23 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
 .trophy-count{color:var(--gold);font-size:12px}.celebration{border-radius:13px;padding:14px;background:linear-gradient(115deg,#273d39,#343349);text-align:left;margin-top:14px;border:1px solid #5b6859}.celebration strong{color:#f6dda0}.celebration p{font-size:13px;color:#d8e7e4}.celebration ul{padding-left:20px;margin:8px 0 0;font-size:13px}.mini-quest{font-size:12px;color:var(--gold);margin-top:7px}.quiz-combo{font-size:12px;color:var(--gold);font-weight:700}.support-note{font-size:12px;color:var(--muted);margin-top:10px}
 @media(max-width:470px){.game-top{padding:13px 14px;gap:9px}.badge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rank-name{font-size:15px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+[hidden]{display:none!important}
+.button.ghost.rank-name{font-size:17px;color:var(--gold)}
+#speedForm{margin-top:16px}#speedForm button{margin:6px 4px 6px 0}#speedEntry{display:block;margin:12px 0}#speedAnswer{max-width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--txt);font:inherit}
+#speedReport h4{margin:20px 0 6px}#speedReport meter{accent-color:var(--accent)}#speedReport p{font-size:13px}#rankDialog::backdrop{background:#0009}#rankList li{padding:5px}#rankList li[aria-current]{color:var(--gold);font-weight:700}
+.skill{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}.skill .level{text-align:right}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header><div class="logo">mind<span>math</span><div class="tag">A little practice, matched to you.</div></div><span class="pill" id="dateLabel"></span></header>
-<div class="hero"><h1>Small quests. Real mental math power.</h1><p>Just five minutes a day. Discover shortcuts, beat personal challenges, and earn trophies for genuine progress—not just speed.</p></div>
-<section class="game-top" aria-label="Player experience and rank">
+<div class="hero"><h1>Small quests. Real mental math power.</h1><p>Practice at your own pace. Build your Rank by solving accurately and quickly.</p></div>
+<section class="game-top" aria-label="Combined performance rank">
   <span class="rank-icon" aria-hidden="true">🧠</span>
-  <div><div class="rank-name" id="rankName">Curious Beginner</div><div class="small" id="xpLabel">0 XP · 100 XP to next rank</div><div class="xpbar" role="progressbar" aria-label="Experience towards next player rank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xpTrack"><div id="xpFill"></div></div></div>
+  <div><button class="button ghost rank-name" id="rankName" type="button" aria-haspopup="dialog">Unranked</button><div class="small" id="xpLabel">Take an assessment to establish your Rank</div><div class="xpbar" role="progressbar" aria-label="Combined rank score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xpTrack"><div id="xpFill"></div></div></div>
   <div class="rank-num" id="rankNumber">1<small>RANK</small></div>
 </section>
-<div class="stats" aria-label="Progress summary"><div class="stat"><strong id="dayCount">0</strong><small>days practiced</small></div><div class="stat"><strong id="streak">0</strong><small>day streak</small></div><div class="stat"><strong id="accuracy">—</strong><small>accuracy</small></div></div><p id="storageWarning" class="small wrong hidden" style="margin:0 0 13px">This browser is blocking storage. Progress may not survive closing this page. Export a backup after training.</p>
+<p id="storageWarning" class="small wrong hidden" style="margin:0 0 13px">This browser is blocking storage. Progress may not survive closing this page. Export a backup after training.</p>
 <main class="card">
 <section id="homeView">
   <div class="row"><div><div class="topic">Today's workout</div><h2 style="margin-top:5px">Personalized practice</h2></div><span class="pill">Max. 5 min</span></div>
@@ -55,7 +60,7 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
 </section>
 <section id="quizView" class="hidden">
   <div class="row"><span class="topic" id="topicName">Addition</span><span class="small" id="timer">05:00 left</span></div>
-  <div class="row small" style="margin-top:10px"><span id="counter">Question 1 / 12</span><span id="score">0 correct</span></div>
+  <div class="row small" style="margin-top:10px"><span id="counter">Question 1 / 12</span><span id="score">Unranked</span></div>
   <div class="row"><span class="quiz-combo" id="quizCombo" aria-live="polite">Build a combo with correct answers</span><span class="mini-quest" id="quizQuest">Daily quest: 0 / 3</span></div>
   <div class="bar"><div class="fill" id="sessionFill"></div></div>
   <div class="small" id="drillLabel">Technique: make a ten</div>
@@ -70,26 +75,27 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
   <form id="answerForm" autocomplete="off"><label for="answer" class="small">Your answer</label><div class="answerline"><input id="answer" type="text" inputmode="decimal" aria-label="Your answer" autocomplete="off" spellcheck="false" required><button class="button" id="submitBtn" type="submit">Check</button></div></form>
   <div class="feedback" id="feedback" aria-live="polite"></div>
   <div class="actions"><button class="button ghost" id="showCoachBtn" type="button">Show a technique</button><button class="button secondary hidden" id="nextBtn" type="button">Next →</button><button class="button ghost" id="finishBtn" type="button">End session</button></div>
-  <p class="small" style="margin-top:15px">Accuracy first, speed later. <kbd>Enter</kbd> checks your answer.</p>
+  <p class="small" style="margin-top:15px">Build your Rank with accurate, faster solutions. <kbd>Enter</kbd> checks your answer.</p>
 </section>
 <section id="resultView" class="hidden center">
-  <div class="topic">Session complete</div><div class="big" id="resultScore">0 / 0</div>
+  <div class="topic">Session complete</div><div class="big" id="resultScore">Unranked</div>
   <h2 id="resultTitle">Practice complete</h2><p id="resultText" style="margin-top:8px"></p>
   <div class="insight" id="changes" style="text-align:left"></div>
   <div class="celebration" id="sessionRewards" aria-live="polite"></div>
   <div class="actions" style="justify-content:center"><button class="button" id="backBtn" type="button">Back to dashboard</button></div>
 </section>
 <section class="card" style="margin-top:24px;padding:24px">
-<h2>Speed & accuracy lab</h2><p>Measure 1–4 digit arithmetic with a repeatable 32-question test. Each operation has eight questions. Timing includes reading and entering your answer. Switching tabs interrupts the question and excludes the test from progress comparisons.</p>
-<button class="button" id="speedStart">Take speed test</button> <button class="button ghost" id="speedStats">My stats & levels</button>
-<p id="speedStatus" role="status"></p><form id="speedForm" hidden><h3 id="speedQuestion"></h3><label>Answer <input id="speedAnswer" type="text" inputmode="numeric" autocomplete="off" required></label><button class="button">Check & continue</button><button type="button" id="speedSkip">Skip</button><button type="button" id="speedCancel">Cancel test</button></form><div id="speedReport"></div>
-<details><summary>Targets and research</summary><p>These are training targets, not population percentiles or age, occupation or IQ assessments. Digit count alone does not predict difficulty. Carrying, tables, strategy, presentation and typing affect time. Multiplication uses a 1–4 digit number × a single digit; division reverses those products. Addition and subtraction use two numbers of the selected length.</p><p>Targets in seconds for 1 / 2 / 3 / 4 digits: addition 6 / 12 / 20 / 30; subtraction 6 / 14 / 24 / 36; multiplication 6 / 16 / 28 / 45; division 6 / 18 / 32 / 50. These provisional targets support consistent personal comparison. No comparable adult norms were established for this test.</p><p><a href="https://home.xtramath.org/support/what-are-the-timer-options-and-how-do-they-benefit-students" target="_blank" rel="noopener">XtraMath uses a six-second basic-fact proficiency target</a>. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6542658/" target="_blank" rel="noopener">Arithmetic research distinguishes calculation, decision and response stages</a>. Laboratory verification times cannot be treated as norms for typed answers here.</p><p>Ranks are game achievements: Foundations, Developing, Fluent, Expert and Genius Quest. They describe performance on this test only. Repeat the same test format several times before interpreting a trend.</p></details></section></main>
-<section class="card below" aria-labelledby="trophyTitle"><div class="row"><h2 id="trophyTitle">🏆 Trophy cabinet</h2><span class="trophy-count" id="trophyCount">0 / 12 earned</span></div><p class="small" style="margin-top:6px">Little milestones for real learning. Trophies stay unlocked, even if a skill level drops for review.</p><div id="trophyGrid" class="badge-grid"></div></section>
-<section class="card below"><div class="row"><h2>Your skills</h2><span class="small">Levels 1–8</span></div><div class="skills" id="skills" style="margin-top:14px"></div>
+<h2>Rank assessment</h2><p>Measure 1–4 digit arithmetic with a repeatable 40-question test. Each operation has eight questions. Press “Solved it” when you have the answer in mind, then type it. The question disappears before entry. Entry time is excluded; the signal still includes reading and your reaction to the button. Times below two seconds receive equal credit. Switching tabs interrupts the question and excludes the test from progress comparisons.</p>
+<button class="button" id="speedStart">Take speed test</button> <button class="button ghost" id="speedStats">My ranks & charts</button>
+<p id="speedStatus" role="status"></p><form id="speedForm" hidden><h3 id="speedQuestion"></h3><button type="button" id="speedSolved" class="button">Solved it</button><label id="speedEntry">Answer <input id="speedAnswer" type="text" inputmode="decimal" autocomplete="off" required></label><button class="button" id="speedCheck">Check & continue</button><button type="button" id="speedSkip">Skip</button><button type="button" id="speedCancel">Cancel test</button></form><div id="speedReport"></div>
+<details><summary>Targets and research</summary><p>These are training targets, not population percentiles or age, occupation or IQ assessments. Digit count alone does not predict difficulty. Carrying, tables, strategy, presentation and typing affect time. Multiplication uses a 1–4 digit number × a single digit; division reverses those products. Addition and subtraction use two numbers of the selected length.</p><p>Full-score targets in seconds for 1 / 2 / 3 / 4 digits: addition 2 / 4 / 7 / 10; subtraction 2 / 5 / 8 / 12; multiplication 2 / 6 / 10 / 15; division 2 / 6 / 11 / 17. These app-defined, aspirational targets support personal comparison; they are not taken from grade or profession norms. The two-second scoring floor gives no bonus for sub-two-second responses. Percentages use 10%, 25% or 50% of 1–4 digit multiples of four, with targets 2 / 5 / 8 / 12 seconds. No comparable adult norms were established for this test.</p><p><a href="https://home.xtramath.org/support/what-are-the-timer-options-and-how-do-they-benefit-students" target="_blank" rel="noopener">XtraMath uses a six-second basic-fact proficiency target</a>. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6542658/" target="_blank" rel="noopener">Arithmetic research distinguishes calculation, decision and response stages</a>. Laboratory verification times cannot be treated as norms for typed answers here.</p><p>Ranks use school and career themes as game titles. They do not establish equivalence to actual children, teachers, accountants or mathematicians. Two samples per digit band give a provisional estimate. Repeat assessments to confirm progress.</p></details></section></main><dialog id="rankDialog" aria-labelledby="rankHeading" style="max-width:650px;max-height:85vh;overflow:auto;background:var(--panel,#102735);color:inherit;border-radius:16px;padding:24px">
+<button id="closeRanks" class="button ghost">Close</button><h2 id="rankHeading">Rank ladder</h2><p>School and career names are motivational game titles. The thresholds describe this assessment, and have not been validated against people of those ages or professions.</p><p>Each correct answer contributes target seconds divided by solve seconds, capped at one. Incorrect and skipped answers contribute zero. Times below two seconds count as two. Each digit band and operation has equal weight. Rank uses the latest complete assessment.</p><ol id="rankList"></ol></dialog>
+<section class="card below" aria-labelledby="trophyTitle"><div class="row"><h2 id="trophyTitle">🏆 Trophy cabinet</h2><span class="trophy-count" id="trophyCount">0 / 12 earned</span></div><p class="small" style="margin-top:6px">Little milestones for real learning. Trophies stay unlocked, even when practice becomes easier for review.</p><div id="trophyGrid" class="badge-grid"></div></section>
+<section class="card below"><div class="row"><h2>Your skills</h2><span class="small">Operation ranks</span></div><div class="skills" id="skills" style="margin-top:14px"></div>
 <details><summary>Technique tracker — 15 specific skills</summary><div class="details"><p id="trackerIntro">Your mistakes, speed, and use of hints identify which methods deserve extra practice.</p><div id="microList" class="micro-list"></div></div></details>
 <div class="footer"><div class="history" id="history"></div><button class="button ghost" id="exportBtn" type="button">Export backup</button></div>
 <details><summary>Technique library</summary><div class="details" id="library"></div></details>
-<details><summary>How coaching, levels and privacy work</summary><div class="details"><p>Each of the five main skills has an independent difficulty level. The trainer also tracks 15 specific techniques. A weak technique receives repeat questions, step-by-step methods, and extra attention in future sessions. After successful guided practice, it tests you without tips.</p><p>Level up: at least 9 correct in the latest 10 questions for that skill, at least 8 independent successes, a reasonable average time, and practice across multiple techniques. No level up while a tested technique for that skill needs a drill. Level down: 5 or fewer correct in a 10-question window. Changes require repeated evidence, not one mistake.</p><p>Your daily session ends after 5 minutes of visible active practice or 12 checked answers, whichever happens first. The clock pauses when you leave the tab. You can finish early. Lessons are short, and there is no requirement to beat a countdown to learn. One official session is available per local calendar day.</p><p>Earn XP for questions, a modest bonus for independent correct answers and successful daily quests. A separate player rank is only a motivational summary; it never determines mathematical difficulty. Trophies celebrate completed practice, independent solutions, and actual progress. Missed days have no XP penalty and do not erase trophies.</p><p>Everything runs offline and remains only in your browser's <code>localStorage</code>. The upgraded trainer reads progress from the previous version when opened under the same browser origin. Clearing storage, switching browsers/devices or some <code>file://</code> browser policies can affect persistence. Export a JSON backup regularly.</p><div class="actions"><button class="button ghost" id="importBtn" type="button">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"><button class="button ghost" id="resetBtn" type="button">Reset all progress</button></div></div></details>
+<details><summary>Coaching and privacy</summary><div class="details"><p>Your latest Rank assessment sets the starting difficulty for each operation and directs extra practice to your weakest operation. Daily coaching then adjusts difficulty as you learn. Retake the assessment to update your Rank. Practice records and assessments stay in this browser and are included in exported backups.</p><div class="actions"><button class="button ghost" id="importBtn" type="button">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"><button class="button ghost" id="resetBtn" type="button">Reset all progress</button></div></div></details>
 </section>
 </div>
 <script>
@@ -97,6 +103,7 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
 'use strict';
 const KEY='mindmath_daily_v1', MAX_Q=12, MAX_MS=300000, QUEST_BONUS=30, TROPHY_BONUS=15;
 const NAMES=['Addition','Subtraction','Multiplication','Division','Percentages'];
+const speedTargets={Addition:[2,4,7,10],Subtraction:[2,5,8,12],Multiplication:[2,6,10,15],Division:[2,6,11,17],Percentages:[2,5,8,12]};
 const TOPICS={
   add10:{skill:'Addition',title:'Make a ten',summary:'Finish the next ten first, then add what remains.',example:'8 + 7 → 8 + 2 + 5'},
   addcarry:{skill:'Addition',title:'Add in chunks',summary:'Add the tens, then add the ones. Handle a carry without juggling everything.',example:'47 + 38 → 47 + 30 + 8'},
@@ -124,7 +131,12 @@ function cleanHistory(arr,withTopic=false){if(!Array.isArray(arr))return [];retu
 function sanitize(x){
   if(!x||![1,2,3].includes(x.version)||!x.skills||!x.days||typeof x.days!=='object'||Array.isArray(x.days))throw Error('Invalid backup');
   const d=fresh();
-  d.speedTests=Array.isArray(x.speedTests)?x.speedTests.filter(t=>t&&typeof t.date==='string'&&Array.isArray(t.rows)&&t.rows.length===32&&t.rows.every(r=>['Addition','Subtraction','Multiplication','Division'].includes(r.skill)&&Number.isInteger(r.digits)&&r.digits>=1&&r.digits<=4&&Number.isFinite(r.seconds)&&r.seconds>=0&&Number.isFinite(r.target)&&r.target>0&&typeof r.correct==='boolean')).slice(-40):[];
+  d.speedTests=Array.isArray(x.speedTests)?x.speedTests.filter(t=>{
+    if(!t||!Number.isFinite(Date.parse(t.date))||!Array.isArray(t.rows)||(t.protocol===2?t.rows.length!==40:t.rows.length!==32))return false;
+    if(!t.rows.every(r=>r&&NAMES.includes(r.skill)&&Number.isInteger(r.digits)&&r.digits>=1&&r.digits<=4&&Number.isFinite(r.seconds)&&r.seconds>=0&&Number.isFinite(r.target)&&r.target>0&&typeof r.correct==='boolean'))return false;
+    if(t.protocol===2)return NAMES.every(skill=>[1,2,3,4].every(digits=>t.rows.filter(r=>r.skill===skill&&r.digits===digits&&r.target===speedTargets[skill][digits-1]).length===2));
+    return true;
+  }).slice(-40):[];
 
   for(const n of NAMES){const s=x.skills[n];if(!s||typeof s!=='object')continue;d.skills[n]={level:clamp(Math.floor(Number(s.level)||1),1,8),history:cleanHistory(s.history,true),attempts:clamp(Math.floor(Number(s.attempts)||0),0,1e9),correct:0};d.skills[n].correct=clamp(Math.floor(Number(s.correct)||0),0,d.skills[n].attempts)}
   if(x.version>=2&&x.topics&&typeof x.topics==='object')for(const id of IDS){const t=x.topics[id];if(!t||typeof t!=='object')continue;d.topics[id]={history:cleanHistory(t.history).slice(-16),attempts:clamp(Math.floor(Number(t.attempts)||0),0,1e9),correct:0};d.topics[id].correct=clamp(Math.floor(Number(t.correct)||0),0,d.topics[id].attempts)}
@@ -154,29 +166,35 @@ function sanitize(x){
   }
   return d;
 }
-const RANKS=[{name:'Curious Beginner',at:0},{name:'Number Explorer',at:100},{name:'Pattern Hunter',at:250},{name:'Shortcut Seeker',at:500},{name:'Quick Thinker',at:900},{name:'Mental Math Ace',at:1400},{name:'Number Wizard',at:2200},{name:'MindMath Legend',at:3400}];
+const RANKS=['Foundations','1st Grader','2nd Grader','3rd Grader','4th Grader','5th Grader','6th Grader','7th Grader','8th Grader','9th Grader','10th Grader','11th Grader','12th Grader','College Learner','Graduate','Junior Accountant','Senior Accountant','Math Teacher','Mathematician','Genius'].map((name,i)=>({name,at:i*5}));
 const AWARDS=[
  {id:'first',icon:'🚀',name:'First Step',desc:'Finish your first session',test:()=>Object.keys(data.days).length>=1},
  {id:'three',icon:'🌱',name:'Getting Going',desc:'Practice on 3 different days',test:()=>Object.keys(data.days).length>=3},
  {id:'seven',icon:'🌳',name:'Rooted Habit',desc:'Practice on 7 different days',test:()=>Object.keys(data.days).length>=7},
- {id:'streak',icon:'🔥',name:'On a Roll',desc:'Reach a 5-day streak',test:()=>streak()>=5},
  {id:'correct25',icon:'🎯',name:'Sharp Aim',desc:'Solve 25 questions correctly',test:()=>totalCorrect()>=25},
  {id:'correct100',icon:'💎',name:'Centurion',desc:'Solve 100 questions correctly',test:()=>totalCorrect()>=100},
  {id:'independent',icon:'🧩',name:'Own Your Method',desc:'10 correct without hints',test:()=>data.game.independent>=10},
  {id:'learner',icon:'📖',name:'Technique Learner',desc:'10 correct with guidance',test:()=>data.game.guidedWins>=10},
- {id:'level',icon:'📈',name:'Level Climber',desc:'Earn a skill level-up',test:()=>data.game.levelUps>=1||NAMES.some(k=>data.skills[k].level>1)},
+ {id:'level',icon:'📈',name:'Skill Climber',desc:'Unlock harder practice',test:()=>data.game.levelUps>=1||NAMES.some(k=>data.skills[k].level>1)},
  {id:'combo',icon:'⚡',name:'Three in a Row',desc:'3 correct answers in a row',test:()=>data.game.bestCombo>=3},
  {id:'quests',icon:'🗺️',name:'Quest Seeker',desc:'Complete 3 daily quests',test:()=>Object.values(data.game.quests).filter(q=>q.done).length>=3},
  {id:'allskills',icon:'🌈',name:'All-Rounder',desc:'Try all 5 math skills',test:()=>NAMES.every(k=>data.skills[k].attempts>0)}
 ];
 const QUESTS={
  focus:{name:'Skill Rescue',desc:'Solve 2 problems independently using {topic}',target:2},
- independent:{name:'Solo Streak',desc:'Get 3 correct answers without hints',target:3},
+ independent:{name:'Solo Solver',desc:'Get 3 correct answers without hints',target:3},
  explore:{name:'Technique Safari',desc:'Solve 3 different techniques correctly',target:3},
  practice:{name:'Warm-up Wanderer',desc:'Give 5 questions an honest try',target:5}
 };
 function totalCorrect(){return NAMES.reduce((sum,k)=>sum+data.skills[k].correct,0)}
-function rankInfo(){const xp=data.game.xp;let idx=0;for(let i=0;i<RANKS.length;i++)if(xp>=RANKS[i].at)idx=i;const base=RANKS[idx].at,next=RANKS[idx+1]?.at;return{name:RANKS[idx].name,number:idx+1,progress:next?Math.round((xp-base)/(next-base)*100):100,toNext:next?next-xp:0,next}}
+function rankInfo(skill){
+  const test=(data.speedTests||[]).filter(t=>t.protocol===2).at(-1);
+  const rows=test?test.rows.filter(r=>!skill||r.skill===skill):[];
+  if(!rows.length)return {name:'Unranked',number:0,progress:0};
+  const score=speedScore(rows),index=Math.min(RANKS.length-1,Math.floor(score/5));
+  return {name:RANKS[index].name,number:index+1,progress:score};
+}
+
 function questPlan(){const existing=data.game.quests[today()];if(existing)return existing;const focus=weakest();if(focus)return{kind:'focus',topic:focus,done:false};const n=Number(today().replace(/-/g,''))%3;return{kind:['independent','explore','practice'][n],topic:null,done:false}}
 function questInfo(q){const cfg=QUESTS[q.kind]||QUESTS.practice;return{...cfg,desc:cfg.desc.replace('{topic}',q.topic&&TOPICS[q.topic]?TOPICS[q.topic].title:'a focus technique')}}
 function questProgress(q,r){if(q.kind==='focus')return r.filter(x=>x.correct&&!x.guided&&x.topic===q.topic).length;
@@ -303,9 +321,9 @@ function chooseTopic(){
   const s=data.session,previous=s.results.at(-1);
   // One immediate coached retry after an error, capped to avoid frustration.
   if(previous&&!previous.correct&&previous.topic&&recentCount(previous.topic)<3)return previous.topic;
-  const measured=(data.speedTests||[]).at(-1);
+  const measured=(data.speedTests||[]).filter(t=>t.protocol===2).at(-1);
   if(measured&&s.results.length%3===1){
-    const scores=NAMES.filter(n=>n!=='Percentages').map(skill=>({skill,score:measured.rows.filter(r=>r.skill===skill).reduce((sum,r)=>sum+(r.correct?Math.min(1,r.target/Math.max(.1,r.seconds)):0),0)})).sort((a,b)=>a.score-b.score);
+    const scores=NAMES.map(skill=>({skill,score:speedScore(measured.rows.filter(r=>r.skill===skill))})).sort((a,b)=>a.score-b.score);
     const topics=IDS.filter(id=>TOPICS[id].skill===scores[0].skill&&recentCount(id)<3);
     if(topics.length)return pick(topics);
   }
@@ -332,21 +350,21 @@ function adjust(skill){
   return 0;
 }
 function show(view){for(const v of ['home','quiz','result'])$(v+'View').classList.toggle('hidden',v!==view)}
-function streak(){let n=0,d=new Date(today()+'T12:00:00');if(!data.days[today()])d.setDate(d.getDate()-1);for(;;){const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(!data.days[k])break;n++;d.setDate(d.getDate()-1)}return n}
-function focusDescription(id){const x=evidence(id),pieces=[];if(x.wrong)pieces.push(`${x.wrong} incorrect`);if(x.slow)pieces.push(`${x.slow} slow`);if(x.help)pieces.push(`${x.help} with tips`);return`${TOPICS[id].title} (${TOPICS[id].skill}). Recent evidence: ${pieces.join(', ')||'building consistency'} from ${x.n} tries at this level.`}
+function focusDescription(id){const x=evidence(id),pieces=[];if(x.wrong)pieces.push(`${x.wrong} incorrect`);if(x.slow)pieces.push(`${x.slow} slow`);if(x.help)pieces.push(`${x.help} with tips`);return`${TOPICS[id].title} (${TOPICS[id].skill}). Recent evidence: ${pieces.join(', ')||'building consistency'} from ${x.n} tries at this difficulty.`}
 function render(){
-  const days=Object.values(data.days),all=days.reduce((t,d)=>t+d.total,0),correct=days.reduce((t,d)=>t+d.correct,0);
+  const days=Object.values(data.days),all=days.reduce((t,d)=>t+d.total,0);
   const rank=rankInfo();$('rankName').textContent=rank.name;$('rankNumber').innerHTML=`${rank.number}<small>RANK</small>`;
-  $('xpLabel').textContent=rank.next?`${data.game.xp} XP · ${rank.toNext} to next rank`:`${data.game.xp} XP · Highest rank earned`;
+  $('xpLabel').textContent=rank.number?rank.progress+'/100 Rank score · game title':'Take an assessment to establish your Rank';
   $('xpFill').style.width=rank.progress+'%';$('xpTrack').setAttribute('aria-valuenow',String(rank.progress));
-  $('storageWarning').classList.toggle('hidden',storageWorking);$('dayCount').textContent=days.length;$('streak').textContent=streak();$('accuracy').textContent=all?`${Math.round(correct/all*100)}%`:'—';$('dateLabel').textContent=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
-  $('skills').replaceChildren();for(const n of NAMES){const s=data.skills[n],h=s.history.slice(-10),rate=h.length?Math.round(h.filter(x=>x.correct).length/h.length*100):null;
-    const box=document.createElement('div');box.className='skill';const title=document.createElement('span');title.textContent=n;const lev=document.createElement('span');lev.className='level';lev.textContent=`Level ${s.level} / 8${rate===null?'':` · ${rate}% recent`}`;
-    const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=`${h.length*10}%`;bar.appendChild(fill);box.append(title,lev,bar);$('skills').appendChild(box);
+  $('storageWarning').classList.toggle('hidden',storageWorking);$('dateLabel').textContent=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  $('skills').replaceChildren();for(const n of NAMES){
+    const skillRank=rankInfo(n);
+    const box=document.createElement('div');box.className='skill';const title=document.createElement('span');title.textContent=n;const lev=document.createElement('span');lev.className='level';lev.textContent=skillRank.name+' · game title';
+    const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=skillRank.progress+'%';bar.appendChild(fill);box.append(title,lev,bar);$('skills').appendChild(box);
   }
   const focus=weakest(),complete=!!data.days[today()];
   const insight=$('homeInsight');insight.replaceChildren();const head=document.createElement('div');head.className='focushead';const strong=document.createElement('strong');strong.textContent=focus?'Your next focus':'Your learning plan';head.appendChild(strong);insight.appendChild(head);
-  const desc=document.createElement('p');desc.style.color='#d5eee8';desc.textContent=complete?`Today: ${data.days[today()].correct}/${data.days[today()].total} correct. `:data.session?'Your unfinished session is saved. ':'';
+  const desc=document.createElement('p');desc.style.color='#d5eee8';desc.textContent=complete?'Daily challenge complete. ':data.session?'Your unfinished session is saved. ':'';
   desc.textContent+=focus?`${focusDescription(focus)} We'll revisit this technique with guided examples, then fade the tips.`:'We are sampling different techniques to discover your strengths and gaps. Wrong answers become a short coached retry.';insight.appendChild(desc);
   const q=questPlan(),qr=data.session?.results||[];const homeQ=$('homeQuest');homeQ.replaceChildren(...questElement(q,qr));
   renderTrophies();
@@ -378,8 +396,8 @@ function displayQuestion(recover=false){
   answered=false;coachShown=false;guided=false;shownSteps=0;
   if(recover&&data.session.current)current=data.session.current;
   else{const id=chooseTopic();current=makeProblem(id,data.skills[TOPICS[id].skill].level);data.session.current=current;save()}
-  guided=!!current.guided;questionStart=elapsed();$('topicName').textContent=`${current.skill} · Level ${current.level}`;
-  $('counter').textContent=`Question ${data.session.results.length+1} / ${MAX_Q}`;$('score').textContent=`${data.session.results.filter(x=>x.correct).length} correct`;
+  guided=!!current.guided;questionStart=elapsed();$('topicName').textContent=`${current.skill} · ${rankInfo(current.skill).name}`;
+  $('counter').textContent=`Question ${data.session.results.length+1} / ${MAX_Q}`;$('score').textContent=rankInfo(current.skill).name;
   $('sessionFill').style.width=`${data.session.results.length/MAX_Q*100}%`;$('drillLabel').textContent=`Technique: ${TOPICS[current.topic].title}`;
   const combo=comboOf(data.session.results);$('quizCombo').textContent=combo>1?`⚡ ${combo} correct in a row!`:'Build a combo with correct answers';
   const q=data.game.quests[today()]||questPlan(),qcfg=questInfo(q);$('quizQuest').textContent=`🗺️ ${qcfg.name}: ${Math.min(questProgress(q,data.session.results),qcfg.target)}/${qcfg.target}`;
@@ -424,10 +442,10 @@ function check(ev){
   if(q){const cfg=questInfo(q);$('quizQuest').textContent=`🗺️ ${cfg.name}: ${Math.min(questProgress(q,data.session.results),cfg.target)}/${cfg.target}${q.done?' ✓':''}`}
 
   answered=true;
-  $('feedback').textContent=(right?`Correct — ${current.answer}. `:`Answer: ${current.answer}. `)+`+${xp} XP. `+(completedQuest?`Daily quest complete! +${QUEST_BONUS} XP. `:'')+(combo>=3?`${combo}-answer combo! `:'')+(change===1?'Skill level up!':change===-1?'A gentler level will help rebuild this skill.':right&&guided?'Next, try this without the tip.':'');
+  $('feedback').textContent=(right?`Correct — ${current.answer}. `:`Answer: ${current.answer}. `)+`+${xp} XP. `+(completedQuest?`Daily quest complete! +${QUEST_BONUS} XP. `:'')+(combo>=3?`${combo}-answer combo! `:'')+(change===1?'Harder practice unlocked!':change===-1?'Focused foundation practice is next.':right&&guided?'Next, try this without the tip.':'');
   $('feedback').className='feedback '+(right?'good':'wrong');
   $('answer').disabled=true;$('submitBtn').disabled=true;$('answerForm').classList.add('hidden');
-  $('score').textContent=`${data.session.results.filter(r=>r.correct).length} correct`;
+  $('score').textContent=rankInfo().name;
   if(!right){showCoach(true,current.steps.length);$('coachKind').textContent='Worked solution'}
   $('nextBtn').classList.remove('hidden');$('nextBtn').textContent=data.session.results.length>=MAX_Q||elapsed()>=MAX_MS?'See results →':'Next →';$('nextBtn').focus();
   save();lock=false;
@@ -439,10 +457,10 @@ function finish(){
   const newAwards=total?collectAwards():[],earnedXP=r.reduce((sum,x)=>sum+(x.xp||0),0),questDone=!!data.game.quests[data.session.date]?.done;
   data.session=null;current=null;save();
   if(!total){show('home');render();return}
-  $('resultScore').textContent=`${correct} / ${total}`;$('resultTitle').textContent=correct/total>=.85?'Strong practice today':'Good work showing up';
-  $('resultText').textContent=`${Math.round(correct/total*100)}% correct. Accuracy comes first; your next session will adapt to what you found difficult.`;
+  $('resultScore').textContent=rankInfo().name;$('resultTitle').textContent=correct/total>=.85?'Strong practice today':'Good work showing up';
+  $('resultText').textContent='Retake the Rank assessment to measure your progress. Your next practice adapts to your recent solutions.';
   const up=r.filter(x=>x.change===1).map(x=>x.skill),down=r.filter(x=>x.change===-1).map(x=>x.skill),focus=weakest();
-  let msg='';if(up.length)msg+=`Level up: ${[...new Set(up)].join(', ')}. `;if(down.length)msg+=`Foundation review: ${[...new Set(down)].join(', ')}. `;
+  let msg='';if(up.length)msg+=`Harder practice: ${[...new Set(up)].join(', ')}. `;if(down.length)msg+=`Foundation review: ${[...new Set(down)].join(', ')}. `;
   if(focus)msg+=`Next focus: ${TOPICS[focus].title}. ${TOPICS[focus].summary}`;
   else msg+='No consistent weak spot detected yet. We will keep sampling techniques and practicing accurately.';
   $('changes').textContent=msg;
@@ -454,49 +472,48 @@ function finish(){
 function buildLibrary(){const box=$('library');for(const id of IDS){const t=TOPICS[id],item=document.createElement('div');item.className='library-item';const strong=document.createElement('strong');strong.textContent=`${t.title} · ${t.skill}`;const info=document.createElement('small');info.textContent=`${t.summary} Example: ${t.example}`;item.append(strong,info);box.appendChild(item)}}
 $('startBtn').addEventListener('click',start);$('answerForm').addEventListener('submit',check);$('showCoachBtn').addEventListener('click',()=>showCoach());$('stepBtn').addEventListener('click',revealStep);$('hideCoachBtn').addEventListener('click',hideCoach);$('nextBtn').addEventListener('click',next);$('finishBtn').addEventListener('click',finish);$('backBtn').addEventListener('click',()=>{show('home');render()});
 $('exportBtn').addEventListener('click',()=>{if(data.session)commitTime();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`mindmath-backup-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)});
-$('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=sanitize(JSON.parse(await file.text()));if(!confirm('Replace all saved progress with this backup?'))return;stopClock();data=imported;save();show('home');render()}catch(err){alert('This is not a valid MindMath backup.')}finally{e.target.value=''}});
-$('resetBtn').addEventListener('click',()=>{if(!confirm('Delete all progress saved in this browser? This cannot be undone without a backup.'))return;stopClock();data=fresh();save();show('home');render()});
+$('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=sanitize(JSON.parse(await file.text()));if(!confirm('Replace all saved progress with this backup?'))return;stopClock();data=imported;save();show('home');cancelSpeedTest('Backup imported.')}catch(err){alert('This is not a valid MindMath backup.')}finally{e.target.value=''}});
+$('resetBtn').addEventListener('click',()=>{if(!confirm('Delete all progress saved in this browser? This cannot be undone without a backup.'))return;stopClock();data=fresh();save();show('home');cancelSpeedTest('Progress reset.')});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopClock();else if(!$('quizView').classList.contains('hidden'))resumeClock()});window.addEventListener('pagehide',stopClock);
 // Stale previous-day session becomes an ordinary completed day; no extra hidden work is credited.
 if(data.session&&data.session.date!==today()){const r=data.session.results;if(r.length)data.days[data.session.date]={total:r.length,correct:r.filter(x=>x.correct).length};data.session=null;save()}
-const speedTargets={Addition:[6,12,20,30],Subtraction:[6,14,24,36],Multiplication:[6,16,28,45],Division:[6,18,32,50]};
-let speedRun=null,speedStarted=0;
+let speedRun=null,speedStarted=0,speedSeconds=null;
 function speedScore(rows){
-  return Math.round(100*rows.reduce((sum,r)=>sum+(r.correct?Math.min(1,r.target/Math.max(.1,r.seconds)):0),0)/rows.length);
+  return Math.round(100*rows.reduce((sum,r)=>sum+(r.correct?Math.min(1,r.target/Math.max(2,r.seconds)):0),0)/rows.length);
 }
 function speedRank(score){
-  return score>=95?'Genius Quest':score>=85?'Expert':score>=70?'Fluent':score>=45?'Developing':'Foundations';
+  return RANKS[Math.min(RANKS.length-1,Math.floor(score/5))].name;
 }
 function speedRender(){
   const box=$('speedReport');box.replaceChildren();
-  const tests=data.speedTests||[];
-  if(!tests.length){box.textContent='Complete a test to establish your baseline.';return}
+  const tests=(data.speedTests||[]).filter(t=>t.protocol===2);
+  if(!tests.length){box.textContent=(data.speedTests?.length?'Earlier tests included typing time and are kept in your backup. ':'')+'Complete a new test to establish your Rank baseline.';return}
   const test=tests.at(-1);
   const title=document.createElement('h3');
-  title.textContent=speedRank(speedScore(test.rows))+' · '+speedScore(test.rows)+'/100 speed-and-accuracy score';
+  title.textContent=speedRank(speedScore(test.rows))+' · '+speedScore(test.rows)+'/100 Rank score · game title';
   box.append(title);
   const explanation=document.createElement('p');
-  explanation.textContent='Incorrect and skipped answers score zero. Correct answers earn up to 100% of their target-time score. Two samples per digit band are provisional. Most recent test: '+new Date(test.date).toLocaleString();
+  explanation.textContent='Incorrect and skipped answers score zero. Correct answers earn up to 100 points based on solve time. Two samples per digit band are provisional. Most recent test: '+new Date(test.date).toLocaleString();
   box.append(explanation);
   for(const skill of Object.keys(speedTargets)){
     const rows=test.rows.filter(r=>r.skill===skill),score=speedScore(rows);
     const h=document.createElement('h4');h.textContent=skill+' · '+speedRank(score);
     const meter=document.createElement('meter');meter.min=0;meter.max=100;meter.value=score;meter.style.width='100%';meter.setAttribute('aria-label',skill+' speed and accuracy score '+score);
     const info=document.createElement('p');
-    info.textContent=score+'/100 · '+rows.filter(r=>r.correct).length+'/8 correct';
+    info.textContent=score+'/100 Rank score';
     box.append(h,meter,info);
     for(let digits=1;digits<=4;digits++){
-      const band=rows.filter(r=>r.digits===digits),correct=band.filter(r=>r.correct);
+      const band=rows.filter(r=>r.digits===digits);
       const p=document.createElement('p');
-      p.textContent=digits+'-digit band · '+correct.length+'/2 correct · '+(correct.length?(correct.reduce((a,r)=>a+r.seconds,0)/correct.length).toFixed(1)+'s mean correct time':'no correct time')+' · target '+speedTargets[skill][digits-1]+'s';
+      p.textContent=digits+'-digit band · '+speedRank(speedScore(band))+' · '+speedScore(band)+'/100 Rank score · target '+speedTargets[skill][digits-1]+'s';
       box.append(p);
     }
-    const tips={Addition:'Make a ten, then add chunks. 48 + 27 = 48 + 20 + 7 = 75.',Subtraction:'Round and compensate. 83 − 29 = 83 − 30 + 1 = 54.',Multiplication:'Split the number. 24 × 7 = 20 × 7 + 4 × 7 = 168.',Division:'Reverse multiplication or split exact chunks. 96 ÷ 6 = 60 ÷ 6 + 36 ÷ 6 = 16.'};
+    const tips={Addition:'Make a ten, then add chunks. 48 + 27 = 48 + 20 + 7 = 75.',Subtraction:'Round and compensate. 83 − 29 = 83 − 30 + 1 = 54.',Multiplication:'Split the number. 24 × 7 = 20 × 7 + 4 × 7 = 168.',Percentages:'Find 10% by dividing by ten; 25% is one quarter and 50% is one half.',Division:'Reverse multiplication or split exact chunks. 96 ÷ 6 = 60 ÷ 6 + 36 ÷ 6 = 16.'};
     const tip=document.createElement('p');tip.textContent=(score<70?'Practice focus. ':'Keep sharpening. ')+tips[skill];box.append(tip);
   }
   const h=document.createElement('h3');h.textContent='Your test history';box.append(h);
-  tests.slice(-10).forEach((t,i)=>{
-    const label=document.createElement('p');label.textContent=new Date(t.date).toLocaleDateString()+' · '+speedScore(t.rows)+'/100 · '+Math.round(t.rows.filter(r=>r.correct).length/32*100)+'% accuracy';
+  tests.slice(-10).forEach(t=>{
+    const label=document.createElement('p');label.textContent=new Date(t.date).toLocaleDateString()+' · '+speedRank(speedScore(t.rows))+' · '+speedScore(t.rows)+'/100 Rank score';
     const bar=document.createElement('meter');bar.min=0;bar.max=100;bar.value=speedScore(t.rows);bar.style.width='100%';bar.setAttribute('aria-label',label.textContent);box.append(label,bar);
   });
   if(tests.length>1){
@@ -506,9 +523,11 @@ function speedRender(){
 }
 function speedNext(){
   const q=speedRun.questions[speedRun.rows.length];
-  $('speedStatus').textContent='Question '+(speedRun.rows.length+1)+' / 32 · '+q.skill+' · target '+q.target+'s';
+  $('speedStatus').textContent='Question '+(speedRun.rows.length+1)+' / 40 · '+q.skill+' · target '+q.target+'s';
   $('speedQuestion').textContent=q.text;
-  $('speedAnswer').value='';$('speedAnswer').focus();
+  $('speedAnswer').value='';$('speedAnswer').setCustomValidity('');
+  speedSeconds=null;
+  $('speedEntry').hidden=true;$('speedAnswer').disabled=true;$('speedCheck').hidden=true;$('speedSolved').hidden=false;$('speedSolved').focus();
   speedStarted=performance.now();
 }
 $('speedStart').addEventListener('click',()=>{
@@ -523,6 +542,7 @@ $('speedStart').addEventListener('click',()=>{
         if(skill==='Addition'){answer=a+b;text=a+' + '+b}
         if(skill==='Subtraction'){if(a<b)[a,b]=[b,a];answer=a-b;text=a+' − '+b}
         if(skill==='Multiplication'){b=rand(2,9);answer=a*b;text=a+' × '+b}
+        if(skill==='Percentages'){a=4*rand(Math.ceil(low/4),Math.floor(high/4));b=pick([10,25,50]);answer=a*b/100;text=b+'% of '+a}
         if(skill==='Division'){b=rand(2,9);answer=a;text=(a*b)+' ÷ '+b}
         questions.push({skill,digits,answer,text,target:speedTargets[skill][digits-1]});
       }
@@ -530,17 +550,27 @@ $('speedStart').addEventListener('click',()=>{
   }
   speedRun={questions,rows:[],interrupted:false};$('speedForm').hidden=false;$('speedReport').replaceChildren();$('startBtn').disabled=true;speedNext();
 });
+$('speedSolved').addEventListener('click',()=>{
+  if(!speedRun||speedSeconds!==null)return;
+  speedSeconds=Math.max(2,(performance.now()-speedStarted)/1000);
+  $('speedQuestion').textContent='Enter the answer you solved.';
+  $('speedSolved').hidden=true;$('speedEntry').hidden=false;$('speedAnswer').disabled=false;$('speedCheck').hidden=false;$('speedAnswer').focus();
+});
 function speedSubmit(skip){
-  if(!speedRun)return;
+  if(!speedRun||(!skip&&speedSeconds===null))return;
   const raw=$('speedAnswer').value.trim();
-  if(!skip&&!/^-?\d+$/.test(raw)){$('speedAnswer').setCustomValidity('Enter a whole number.');$('speedAnswer').reportValidity();return}
+  if(!skip&&!/^-?\d+(?:\.\d+)?$/.test(raw)){$('speedAnswer').setCustomValidity('Enter a number; decimals are allowed.');$('speedAnswer').reportValidity();return}
   const q=speedRun.questions[speedRun.rows.length];
-  speedRun.rows.push({skill:q.skill,digits:q.digits,target:q.target,seconds:(performance.now()-speedStarted)/1000,correct:!skip&&Number(raw)===q.answer});
-  if(speedRun.rows.length<32){speedNext();return}
+  speedRun.rows.push({skill:q.skill,digits:q.digits,target:q.target,seconds:speedSeconds===null?Math.max(2,(performance.now()-speedStarted)/1000):speedSeconds,correct:!skip&&Math.abs(Number(raw)-q.answer)<1e-8});
+  if(speedRun.rows.length<40){speedNext();return}
   $('speedForm').hidden=true;
-  if(speedRun.interrupted){$('speedStatus').textContent='Test interrupted by leaving the tab. Retake for a comparable result.'}
+  if(speedRun.interrupted){$('speedStatus').textContent='Test interrupted by leaving the tab. Retake for a comparable result.';speedRender()}
   else{
-    data.speedTests=[...(data.speedTests||[]),{date:new Date().toISOString(),rows:speedRun.rows}].slice(-40);save();
+    data.speedTests=[...(data.speedTests||[]),{protocol:2,date:new Date().toISOString(),rows:speedRun.rows}].slice(-40);for(const skill of NAMES){
+      data.skills[skill].level=1+Math.min(7,Math.floor(speedScore(speedRun.rows.filter(r=>r.skill===skill))*8/101));
+      data.skills[skill].history=[];
+    }
+    save();
     $('speedStatus').textContent='Assessment complete. Your weakest operation will receive extra daily practice.';speedRender();
   }
   speedRun=null;render();
@@ -548,10 +578,17 @@ function speedSubmit(skip){
 $('speedForm').addEventListener('submit',e=>{e.preventDefault();speedSubmit(false)});
 $('speedAnswer').addEventListener('input',()=>$('speedAnswer').setCustomValidity(''));
 $('speedSkip').addEventListener('click',()=>speedSubmit(true));
-$('speedCancel').addEventListener('click',()=>{speedRun=null;$('speedForm').hidden=true;$('speedStatus').textContent='Test cancelled. No result saved.';render()});
+function cancelSpeedTest(message='Test cancelled. No result saved.'){speedRun=null;$('speedForm').hidden=true;$('speedStatus').textContent=message;speedRender();render()}
+$('speedCancel').addEventListener('click',()=>cancelSpeedTest());
 $('speedStats').addEventListener('click',speedRender);
 document.addEventListener('visibilitychange',()=>{if(speedRun&&document.hidden)speedRun.interrupted=true});
 
+$('rankName').addEventListener('click',()=>{
+  $('rankList').replaceChildren();
+  for(const rank of RANKS){const li=document.createElement('li');li.textContent=rank.name+' — '+rank.at+'/100 Rank score';if(rank.name===rankInfo().name)li.setAttribute('aria-current','true');$('rankList').append(li)}
+  $('rankDialog').showModal();
+});
+$('closeRanks').addEventListener('click',()=>$('rankDialog').close());
 buildLibrary();render();
 })();
 </script>
