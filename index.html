@@ -35,8 +35,26 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
 [hidden]{display:none!important}
 .button.ghost.rank-name{font-size:17px;color:var(--gold)}
 #speedForm{margin-top:16px}#speedForm button{margin:6px 4px 6px 0}#speedEntry{display:block;margin:12px 0}#speedAnswer{max-width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--txt);font:inherit}
-#speedReport h4{margin:20px 0 6px}#speedReport meter{accent-color:var(--accent)}#speedReport p{font-size:13px}#rankDialog::backdrop{background:#0009}#rankList li{padding:5px}#rankList li[aria-current]{color:var(--gold);font-weight:700}
+.charts-dialog{width:min(900px,calc(100% - 24px));max-width:none;max-height:90vh;max-height:90dvh;padding:0;border:1px solid #446474;border-radius:22px;background:var(--card);color:var(--txt);box-shadow:0 24px 80px #0009}
+.charts-dialog::backdrop{background:#070d1ac9}
+.charts-header{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card);border-bottom:1px solid var(--line);padding:15px 20px}
+.charts-header h2{font-size:clamp(18px,4vw,24px)}
+.charts-body{padding:20px}.chart-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(145px,100%),1fr));gap:10px}
+.chart-card,.chart-panel{border:1px solid var(--line);border-radius:15px;background:var(--bg);padding:14px;min-width:0}
+.chart-card strong{display:block;font-size:17px;margin:3px 0;overflow-wrap:anywhere}.chart-card .small{line-height:1.4}
+.chart-panel{margin-top:14px}.chart-panel h3{font-size:16px;margin:0}.chart-panel p{margin:4px 0 0}.chart-panel details{margin-top:12px}
+.chart-up{color:var(--accent)}.chart-down{color:var(--bad)}
+.chart-operations{display:grid;gap:9px;margin-top:12px}.chart-operation{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:8px}
+.chart-operation:last-child{border-bottom:0;padding-bottom:0}.chart-operation meter{grid-column:1/-1;width:100%;height:12px;accent-color:var(--accent)}.chart-operation-score{text-align:right}
+.chart-select{color:var(--txt);background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:6px;max-width:100%}
+.chart-plot{display:block;width:100%;max-height:245px;margin:8px 0 0}.chart-plot text{fill:var(--muted);font-size:13px}
+.chart-plot .grid-line{stroke:var(--line);stroke-dasharray:4 4}.chart-plot polyline{fill:none;stroke:var(--accent);stroke-width:2.5}.chart-plot circle{fill:var(--accent);stroke:var(--bg);stroke-width:1.5}.chart-plot .assessment-dot{fill:var(--gold)}.chart-plot .current-dot{fill:var(--txt)}
+.chart-axis{display:flex;justify-content:space-between;gap:8px}.chart-checkpoints{margin:8px 0 0;padding-left:22px}
+.chart-table-scroll{overflow:auto;margin-top:10px}.chart-table{width:100%;border-spacing:4px;text-align:center;font-size:13px}.chart-table th{font-weight:650}.chart-table th[scope="row"]{text-align:left}.chart-table td{min-width:27px;padding:5px 4px;background:#1b2940;border:1px solid var(--line);border-radius:7px;font-variant-numeric:tabular-nums}.chart-table .band-ready{background:#214438;color:#b4f5dc}.chart-table .band-focus{background:#40342b;color:#ffe0a4}.chart-table .band-empty{color:var(--muted);background:transparent}
+@media(max-width:470px){.charts-header,.charts-body{padding:12px}.chart-panel{padding:11px}.chart-table{font-size:12px;border-spacing:3px}.chart-operation{gap:3px 6px}}
+#rankDialog::backdrop{background:#0009}#rankList li{padding:5px}#rankList li[aria-current]{color:var(--gold);font-weight:700}
 .skill{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}.skill .level{text-align:right}
+.practice-settings{margin-top:16px}.practice-settings fieldset{display:flex;flex-wrap:wrap;gap:10px 16px;border:1px solid var(--line);border-radius:12px;margin:10px 0;padding:12px}.practice-settings select{background:var(--sub);color:var(--txt);padding:6px;border:1px solid var(--line);border-radius:6px}.practice-settings label{cursor:pointer}.solve-clock{font-variant-numeric:tabular-nums;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -49,10 +67,19 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
   <div class="rank-num" id="rankNumber">1<small>RANK</small></div>
 </section>
 <p id="storageWarning" class="small wrong hidden" style="margin:0 0 13px">This browser is blocking storage. Progress may not survive closing this page. Export a backup after training.</p>
-<main class="card">
+<details class="card practice-settings" id="practiceSettings">
+  <summary>Practice and assessment settings</summary>
+  <fieldset id="operationOptions"><legend>Operations</legend></fieldset>
+  <label for="maxDigits">Largest number</label>
+  <select id="maxDigits">
+    <option value="1">1 digit</option><option value="2">2 digits</option><option value="3">3 digits</option><option value="4">4 digits</option><option value="5">5 digits</option>
+  </select>
+  <p id="settingsNote" class="small" role="status" style="margin-top:8px"></p>
+</details>
+<main class="card below">
 <section id="homeView">
   <div class="row"><div><div class="topic">Today's workout</div><h2 style="margin-top:5px">Personalized practice</h2></div><span class="pill">Max. 5 min</span></div>
-  <p class="small" style="margin-top:11px">Up to 12 questions. When a technique is difficult, you'll see a short method and try similar questions. Tips gradually disappear as you improve.</p>
+  <p class="small" style="margin-top:11px">Up to 12 questions or 5 minutes of solving. Press Ready to reveal each question, then Solved it before typing. Independent answers update your Rank.</p>
   <div class="insight" id="homeInsight" aria-live="polite"></div>
   <div class="quest-card" id="homeQuest" aria-label="Today's daily quest"></div>
   <div class="game-line"><span class="tiny-chip">⚡ Earn XP for solving</span><span class="tiny-chip">🏆 Unlock milestones</span><span class="tiny-chip">🌱 No penalties for days off</span></div>
@@ -64,7 +91,8 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
   <div class="row"><span class="quiz-combo" id="quizCombo" aria-live="polite">Build a combo with correct answers</span><span class="mini-quest" id="quizQuest">Daily quest: 0 / 3</span></div>
   <div class="bar"><div class="fill" id="sessionFill"></div></div>
   <div class="small" id="drillLabel">Technique: make a ten</div>
-  <div class="question" id="questionText">8 + 7</div>
+  <div class="question" id="questionText" aria-live="polite">Ready when you are</div>
+  <div class="actions"><button class="button" id="practiceReady" type="button">Ready</button><button class="button hidden" id="practiceSolved" type="button">Solved it</button><span class="solve-clock" id="practiceTime"></span></div>
   <div class="coach hidden" id="coachPanel" aria-live="polite">
     <div class="coach-kind" id="coachKind">Method to try</div>
     <h3 id="coachTitle"></h3>
@@ -85,17 +113,37 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
   <div class="actions" style="justify-content:center"><button class="button" id="backBtn" type="button">Back to dashboard</button></div>
 </section>
 <section class="card" style="margin-top:24px;padding:24px">
-<h2>Rank assessment</h2><p>Measure 1–4 digit arithmetic with a repeatable 40-question test. Each operation has eight questions. Press “Solved it” when you have the answer in mind, then type it. The question disappears before entry. Entry time is excluded; the signal still includes reading and your reaction to the button. Times below two seconds receive equal credit. Switching tabs interrupts the question and excludes the test from progress comparisons.</p>
-<button class="button" id="speedStart">Take speed test</button> <button class="button ghost" id="speedStats">My ranks & charts</button>
-<p id="speedStatus" role="status"></p><form id="speedForm" hidden><h3 id="speedQuestion"></h3><button type="button" id="speedSolved" class="button">Solved it</button><label id="speedEntry">Answer <input id="speedAnswer" type="text" inputmode="decimal" autocomplete="off" required></label><button class="button" id="speedCheck">Check & continue</button><button type="button" id="speedSkip">Skip</button><button type="button" id="speedCancel">Cancel test</button></form><div id="speedReport"></div>
-<details><summary>Targets and research</summary><p>These are training targets, not population percentiles or age, occupation or IQ assessments. Digit count alone does not predict difficulty. Carrying, tables, strategy, presentation and typing affect time. Multiplication uses a 1–4 digit number × a single digit; division reverses those products. Addition and subtraction use two numbers of the selected length.</p><p>Full-score targets in seconds for 1 / 2 / 3 / 4 digits: addition 2 / 4 / 7 / 10; subtraction 2 / 5 / 8 / 12; multiplication 2 / 6 / 10 / 15; division 2 / 6 / 11 / 17. These app-defined, aspirational targets support personal comparison; they are not taken from grade or profession norms. The two-second scoring floor gives no bonus for sub-two-second responses. Percentages use 10%, 25% or 50% of 1–4 digit multiples of four, with targets 2 / 5 / 8 / 12 seconds. No comparable adult norms were established for this test.</p><p><a href="https://home.xtramath.org/support/what-are-the-timer-options-and-how-do-they-benefit-students" target="_blank" rel="noopener">XtraMath uses a six-second basic-fact proficiency target</a>. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6542658/" target="_blank" rel="noopener">Arithmetic research distinguishes calculation, decision and response stages</a>. Laboratory verification times cannot be treated as norms for typed answers here.</p><p>Ranks use school and career themes as game titles. They do not establish equivalence to actual children, teachers, accountants or mathematicians. Two samples per digit band give a provisional estimate. Repeat assessments to confirm progress.</p></details></section></main><dialog id="rankDialog" aria-labelledby="rankHeading" style="max-width:650px;max-height:85vh;overflow:auto;background:var(--panel,#102735);color:inherit;border-radius:16px;padding:24px">
-<button id="closeRanks" class="button ghost">Close</button><h2 id="rankHeading">Rank ladder</h2><p>School and career names are motivational game titles. The thresholds describe this assessment, and have not been validated against people of those ages or professions.</p><p>Each correct answer contributes target seconds divided by solve seconds, capped at one. Incorrect and skipped answers contribute zero. Times below two seconds count as two. Each digit band and operation has equal weight. Rank uses the latest complete assessment.</p><ol id="rankList"></ol></dialog>
+<h2>Rank assessment</h2><p>Estimate your starting Rank with two questions per selected operation and digit band. Press Ready to reveal a question, then Solved it before typing. Reading and button reaction are included in the timer. Times below two seconds receive equal credit.</p><p id="assessmentSize" class="small"></p>
+<button class="button" id="speedStart">Take speed test</button> <button class="button ghost" id="speedStats" type="button" aria-haspopup="dialog">My Rank &amp; Charts</button>
+<p id="speedStatus" role="status"></p><form id="speedForm" hidden><h3 id="speedQuestion" aria-live="polite"></h3><button type="button" id="speedReady" class="button">Ready</button><span class="solve-clock" id="speedTime"></span><button type="button" id="speedSolved" class="button">Solved it</button><label id="speedEntry">Answer <input id="speedAnswer" type="text" inputmode="decimal" autocomplete="off" required></label><button class="button" id="speedCheck">Check & continue</button><button type="button" id="speedSkip">Skip</button><button type="button" id="speedCancel">Cancel test</button></form>
+<details><summary>Targets and research</summary><p>Full-score targets in seconds for 1–5 digits: addition 2 / 4 / 7 / 10 / 14; subtraction 2 / 5 / 8 / 12 / 17; multiplication 2 / 6 / 10 / 15 / 21; division 2 / 6 / 11 / 17 / 24; percentages 2 / 5 / 8 / 12 / 17. Digit count covers the largest operand, or the base amount in a percentage question. Targets are app-defined for these question formats.</p><p><a href="https://home.xtramath.org/support/what-are-the-timer-options-and-how-do-they-benefit-students" target="_blank" rel="noopener">XtraMath basic-fact timing</a> and <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6542658/" target="_blank" rel="noopener">research on stages of arithmetic responses</a> give context. School and career names are motivational titles. These targets lack validation against age or professional groups.</p></details></section></main><dialog id="rankDialog" aria-labelledby="rankHeading" style="max-width:650px;max-height:85vh;overflow:auto;background:var(--panel,#102735);color:inherit;border-radius:16px;padding:24px">
+<button id="closeRanks" class="button ghost">Close</button><h2 id="rankHeading">Rank ladder</h2><p>School and career names are motivational game titles. The thresholds describe this assessment, and have not been validated against people of those ages or professions.</p><p>A correct answer earns up to full credit based on its operation, digits and solve time. Incorrect answers earn zero. An assessment seeds your Rank, then independent practice updates it. Each digit band can contribute up to 20 points. Score at least 85 of 100 timing points in a band to progress to the next one. Overall Rank averages enabled operations.</p><ol id="rankList"></ol></dialog>
+<dialog class="charts-dialog" id="chartsDialog" aria-labelledby="chartsHeading">
+  <div class="charts-header"><h2 id="chartsHeading">My Rank &amp; Charts</h2><form method="dialog"><button class="button ghost" autofocus>Close</button></form></div>
+  <div class="charts-body">
+    <p id="chartScope" class="small" style="margin-bottom:10px"></p>
+    <div id="chartHighlights" class="chart-cards"></div>
+    <section class="chart-panel" aria-labelledby="chartOperationsHeading">
+      <h3 id="chartOperationsHeading">Operation comparison</h3><p class="small">Bars use your Rank ceiling. Changes compare the last two matching checkpoints.</p>
+      <div id="chartOperations" class="chart-operations"></div>
+    </section>
+    <section class="chart-panel" aria-labelledby="chartHistoryHeading">
+      <div class="row"><h3 id="chartHistoryHeading">Rank over time</h3><select id="chartMetric" class="chart-select" aria-label="Rank trend operation"></select></div>
+      <div id="chartHistory"></div>
+    </section>
+    <section class="chart-panel" aria-labelledby="chartBandsHeading">
+      <h3 id="chartBandsHeading">Performance by digit band</h3><p class="small">Combined timing and correctness points out of 100. A band at 85 points unlocks the next difficulty.</p>
+      <div id="chartBands" class="chart-table-scroll"></div>
+      <p id="chartFocus" class="small"></p>
+    </section>
+  </div>
+</dialog>
 <section class="card below" aria-labelledby="trophyTitle"><div class="row"><h2 id="trophyTitle">🏆 Trophy cabinet</h2><span class="trophy-count" id="trophyCount">0 / 12 earned</span></div><p class="small" style="margin-top:6px">Little milestones for real learning. Trophies stay unlocked, even when practice becomes easier for review.</p><div id="trophyGrid" class="badge-grid"></div></section>
 <section class="card below"><div class="row"><h2>Your skills</h2><span class="small">Operation ranks</span></div><div class="skills" id="skills" style="margin-top:14px"></div>
 <details><summary>Technique tracker — 15 specific skills</summary><div class="details"><p id="trackerIntro">Your mistakes, speed, and use of hints identify which methods deserve extra practice.</p><div id="microList" class="micro-list"></div></div></details>
 <div class="footer"><div class="history" id="history"></div><button class="button ghost" id="exportBtn" type="button">Export backup</button></div>
 <details><summary>Technique library</summary><div class="details" id="library"></div></details>
-<details><summary>Coaching and privacy</summary><div class="details"><p>Your latest Rank assessment sets the starting difficulty for each operation and directs extra practice to your weakest operation. Daily coaching then adjusts difficulty as you learn. Retake the assessment to update your Rank. Practice records and assessments stay in this browser and are included in exported backups.</p><div class="actions"><button class="button ghost" id="importBtn" type="button">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"><button class="button ghost" id="resetBtn" type="button">Reset all progress</button></div></div></details>
+<details><summary>Coaching and privacy</summary><div class="details"><p>The assessment estimates your starting Rank. Independent practice can raise or lower your Rank and the difficulty of future questions. Guided answers are coaching only. Practice records and assessments stay in this browser and are included in exported backups.</p><div class="actions"><button class="button ghost" id="importBtn" type="button">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"><button class="button ghost" id="resetBtn" type="button">Reset all progress</button></div></div></details>
 </section>
 </div>
 <script>
@@ -103,7 +151,9 @@ details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}summar
 'use strict';
 const KEY='mindmath_daily_v1', MAX_Q=12, MAX_MS=300000, QUEST_BONUS=30, TROPHY_BONUS=15;
 const NAMES=['Addition','Subtraction','Multiplication','Division','Percentages'];
-const speedTargets={Addition:[2,4,7,10],Subtraction:[2,5,8,12],Multiplication:[2,6,10,15],Division:[2,6,11,17],Percentages:[2,5,8,12]};
+const MAX_DIGITS=5, BAND_ADVANCE=85;
+const speedTargets={Addition:[2,4,7,10,14],Subtraction:[2,5,8,12,17],Multiplication:[2,6,10,15,21],Division:[2,6,11,17,24],Percentages:[2,5,8,12,17]};
+const digitBands=Array.from({length:MAX_DIGITS},(_,i)=>i+1);
 const TOPICS={
   add10:{skill:'Addition',title:'Make a ten',summary:'Finish the next ten first, then add what remains.',example:'8 + 7 → 8 + 2 + 5'},
   addcarry:{skill:'Addition',title:'Add in chunks',summary:'Add the tens, then add the ones. Handle a carry without juggling everything.',example:'47 + 38 → 47 + 30 + 8'},
@@ -126,21 +176,45 @@ const today=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth
 const freshSkill=()=>({level:1,history:[],attempts:0,correct:0});
 const freshTopic=()=>({history:[],attempts:0,correct:0});
 const freshGame=()=>({xp:0,awards:[],bestCombo:0,independent:0,guidedWins:0,levelUps:0,quests:{}});
-const fresh=()=>({version:3,skills:Object.fromEntries(NAMES.map(n=>[n,freshSkill()])),topics:Object.fromEntries(IDS.map(id=>[id,freshTopic()])),days:{},session:null,game:freshGame()});
-function cleanHistory(arr,withTopic=false){if(!Array.isArray(arr))return [];return arr.filter(h=>h&&typeof h.correct==='boolean'&&Number.isFinite(h.ms)).slice(-30).map(h=>({correct:h.correct,ms:clamp(Math.round(h.ms),0,120000),guided:!!h.guided,level:clamp(Math.floor(Number(h.level)||1),1,8),...(withTopic&&IDS.includes(h.topic)?{topic:h.topic}:{})}))}
+const fresh=()=>({version:3,skills:Object.fromEntries(NAMES.map(n=>[n,freshSkill()])),topics:Object.fromEntries(IDS.map(id=>[id,freshTopic()])),days:{},session:null,game:freshGame(),settings:{operations:[...NAMES],maxDigits:MAX_DIGITS},bands:Object.fromEntries(NAMES.map(n=>[n,digitBands.map(()=>null)])),speedTests:[]});
+function cleanHistory(arr,withTopic=false){if(!Array.isArray(arr))return [];return arr.filter(h=>h&&typeof h.correct==='boolean'&&Number.isFinite(h.ms)).slice(-30).map(h=>({correct:h.correct,ms:clamp(Math.round(h.ms),0,120000),guided:!!h.guided,...(Number.isFinite(h.points)?{points:clamp(h.points,0,100)}:{}),level:clamp(Math.floor(Number(h.level)||1),1,8),...(withTopic&&IDS.includes(h.topic)?{topic:h.topic}:{})}))}
 function sanitize(x){
   if(!x||![1,2,3].includes(x.version)||!x.skills||!x.days||typeof x.days!=='object'||Array.isArray(x.days))throw Error('Invalid backup');
   const d=fresh();
+  const operations=NAMES.filter(skill=>Array.isArray(x.settings?.operations)&&x.settings.operations.includes(skill));
+  if(operations.length)d.settings.operations=operations;
+  if(digitBands.includes(x.settings?.maxDigits))d.settings.maxDigits=x.settings.maxDigits;
   d.speedTests=Array.isArray(x.speedTests)?x.speedTests.filter(t=>{
-    if(!t||!Number.isFinite(Date.parse(t.date))||!Array.isArray(t.rows)||(t.protocol===2?t.rows.length!==40:t.rows.length!==32))return false;
-    if(!t.rows.every(r=>r&&NAMES.includes(r.skill)&&Number.isInteger(r.digits)&&r.digits>=1&&r.digits<=4&&Number.isFinite(r.seconds)&&r.seconds>=0&&Number.isFinite(r.target)&&r.target>0&&typeof r.correct==='boolean'))return false;
-    if(t.protocol===2)return NAMES.every(skill=>[1,2,3,4].every(digits=>t.rows.filter(r=>r.skill===skill&&r.digits===digits&&r.target===speedTargets[skill][digits-1]).length===2));
-    return true;
+    if(!t||!Number.isFinite(Date.parse(t.date))||!Array.isArray(t.rows)||!t.rows.every(r=>r&&NAMES.includes(r.skill)&&digitBands.includes(r.digits)&&Number.isFinite(r.seconds)&&r.seconds>=0&&Number.isFinite(r.target)&&r.target>0&&typeof r.correct==='boolean'))return false;
+    if(t.protocol===3){
+      if(!Array.isArray(t.operations)||!t.operations.length||new Set(t.operations).size!==t.operations.length||!t.operations.every(skill=>NAMES.includes(skill))||!digitBands.includes(t.maxDigits))return false;
+      return t.rows.length===2*t.operations.length*t.maxDigits&&t.operations.every(skill=>digitBands.slice(0,t.maxDigits).every(digits=>t.rows.filter(r=>r.skill===skill&&r.digits===digits&&r.target===speedTargets[skill][digits-1]).length===2));
+    }
+    if(t.protocol===2)return t.rows.length===40&&NAMES.every(skill=>digitBands.slice(0,4).every(digits=>t.rows.filter(r=>r.skill===skill&&r.digits===digits&&r.target===speedTargets[skill][digits-1]).length===2));
+    return t.rows.length===32;
   }).slice(-40):[];
+  for(const skill of NAMES){
+    const saved=x.bands?.[skill];
+    if(Array.isArray(saved)){
+      d.bands[skill]=digitBands.map(digits=>Number.isFinite(saved[digits-1])?clamp(saved[digits-1],0,100):null);
+    }else{
+      const old=d.speedTests.filter(t=>t.protocol===2).at(-1);
+      // Older division bands measured the quotient instead of the displayed dividend.
+      if(old&&skill!=='Division')for(const digits of digitBands.slice(0,4))d.bands[skill][digits-1]=speedScore(old.rows.filter(row=>row.skill===skill&&row.digits===digits));
+    }
+  }
 
   for(const n of NAMES){const s=x.skills[n];if(!s||typeof s!=='object')continue;d.skills[n]={level:clamp(Math.floor(Number(s.level)||1),1,8),history:cleanHistory(s.history,true),attempts:clamp(Math.floor(Number(s.attempts)||0),0,1e9),correct:0};d.skills[n].correct=clamp(Math.floor(Number(s.correct)||0),0,d.skills[n].attempts)}
   if(x.version>=2&&x.topics&&typeof x.topics==='object')for(const id of IDS){const t=x.topics[id];if(!t||typeof t!=='object')continue;d.topics[id]={history:cleanHistory(t.history).slice(-16),attempts:clamp(Math.floor(Number(t.attempts)||0),0,1e9),correct:0};d.topics[id].correct=clamp(Math.floor(Number(t.correct)||0),0,d.topics[id].attempts)}
-  for(const [date,v] of Object.entries(x.days)){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&v&&Number.isFinite(v.total)&&Number.isFinite(v.correct)){const total=clamp(Math.floor(v.total),0,MAX_Q);d.days[date]={total,correct:clamp(Math.floor(v.correct),0,total)}}}
+  for(const [date,v] of Object.entries(x.days)){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&v&&Number.isFinite(v.total)&&Number.isFinite(v.correct)){const total=clamp(Math.floor(v.total),0,MAX_Q);d.days[date]={total,correct:clamp(Math.floor(v.correct),0,total)};
+    if(Number.isFinite(v.rank)&&typeof v.scope==='string'){
+      const day=d.days[date];
+      Object.assign(day,{rank:clamp(v.rank,0,100),scope:v.scope.slice(0,100)});
+      if(Number.isFinite(v.recordedAt)&&Math.abs(v.recordedAt)<8.64e15)day.recordedAt=v.recordedAt;
+      const measured=NAMES.filter(skill=>Number.isFinite(v.operationRanks?.[skill]));
+      if(measured.length)day.operationRanks=Object.fromEntries(measured.map(skill=>[skill,clamp(v.operationRanks[skill],0,100)]));
+    }
+  }}
   if(x.version===3 && x.game && typeof x.game==='object'){
     const g=x.game;
     d.game.xp=clamp(Math.floor(Number(g.xp)||0),0,1e9);
@@ -158,11 +232,8 @@ function sanitize(x){
   const s=x.session;
   if(s&&s.date===today()&&!d.days[today()]&&Number.isFinite(s.elapsed)&&Array.isArray(s.results)){
     const r=s.results.filter(z=>z&&NAMES.includes(z.skill)&&typeof z.correct==='boolean').slice(0,MAX_Q).map(z=>({skill:z.skill,topic:IDS.includes(z.topic)?z.topic:null,correct:z.correct,change:clamp(Math.floor(Number(z.change)||0),-1,1),level:clamp(Math.floor(Number(z.level)||1),1,8),guided:z.guided===undefined?true:!!z.guided,xp:clamp(Math.floor(Number(z.xp)||0),0,80)}));
-    d.session={date:today(),elapsed:clamp(s.elapsed,0,MAX_MS),results:r,current:null};
-    const c=s.current;
-    if(c&&IDS.includes(c.topic)&&TOPICS[c.topic].skill===c.skill&&typeof c.text==='string'&&c.text.length<90&&Number.isFinite(c.answer)&&Array.isArray(c.steps)&&c.steps.length>=1&&c.steps.length<=6&&c.steps.every(v=>typeof v==='string'&&v.length<180)){
-      d.session.current={skill:c.skill,topic:c.topic,level:clamp(Math.floor(Number(c.level)||1),1,8),text:c.text,answer:c.answer,prompt:String(c.prompt||'').slice(0,200),steps:[...c.steps],guided:!!c.guided};
-    }
+    d.session={date:today(),elapsed:clamp(s.elapsed,0,MAX_MS),results:r};
+
   }
   return d;
 }
@@ -187,15 +258,36 @@ const QUESTS={
  practice:{name:'Warm-up Wanderer',desc:'Give 5 questions an honest try',target:5}
 };
 function totalCorrect(){return NAMES.reduce((sum,k)=>sum+data.skills[k].correct,0)}
+function bandRank(bands,maxDigits){
+  let score=0;
+  for(let i=0;i<maxDigits;i++){
+    const points=bands[i];
+    if(points===null)break;
+    if(points<BAND_ADVANCE||i===maxDigits-1)return score+points/5;
+    score+=20;
+  }
+  return score;
+}
 function rankInfo(skill){
-  const test=(data.speedTests||[]).filter(t=>t.protocol===2).at(-1);
-  const rows=test?test.rows.filter(r=>!skill||r.skill===skill):[];
-  if(!rows.length)return {name:'Unranked',number:0,progress:0};
-  const score=speedScore(rows),index=Math.min(RANKS.length-1,Math.floor(score/5));
+  const maxDigits=data.settings.maxDigits;
+  const skills=skill?[skill]:data.settings.operations;
+  if(!skills.some(n=>data.bands[n].slice(0,maxDigits).some(value=>value!==null)))return {name:'Unranked',number:0,progress:0};
+  const score=Math.round(skills.reduce((total,n)=>total+bandRank(data.bands[n],maxDigits),0)/skills.length);
+  const index=Math.min(RANKS.length-1,Math.floor(score/5));
   return {name:RANKS[index].name,number:index+1,progress:score};
 }
 
-function questPlan(){const existing=data.game.quests[today()];if(existing)return existing;const focus=weakest();if(focus)return{kind:'focus',topic:focus,done:false};const n=Number(today().replace(/-/g,''))%3;return{kind:['independent','explore','practice'][n],topic:null,done:false}}
+function practiceDigits(skill){
+  const max=data.settings.maxDigits;
+  for(let i=0;i<max;i++){
+    if((data.bands[skill][i]??0)<BAND_ADVANCE)return i+1;
+  }
+  return max;
+}
+
+function rankScope(){return data.settings.maxDigits+':'+data.settings.operations.join(',')}
+
+function questPlan(){const existing=data.game.quests[today()];if(existing&&(!existing.topic||data.settings.operations.includes(TOPICS[existing.topic].skill)))return existing;const focus=weakest();if(focus)return{kind:'focus',topic:focus,done:false};const n=Number(today().replace(/-/g,''))%3;return{kind:(data.settings.operations.length===1?['independent','practice','practice']:['independent','explore','practice'])[n],topic:null,done:false}}
 function questInfo(q){const cfg=QUESTS[q.kind]||QUESTS.practice;return{...cfg,desc:cfg.desc.replace('{topic}',q.topic&&TOPICS[q.topic]?TOPICS[q.topic].title:'a focus technique')}}
 function questProgress(q,r){if(q.kind==='focus')return r.filter(x=>x.correct&&!x.guided&&x.topic===q.topic).length;
   if(q.kind==='independent')return r.filter(x=>x.correct&&!x.guided).length;
@@ -214,153 +306,142 @@ function renderTrophies(){const grid=$('trophyGrid');grid.replaceChildren();cons
  for(const a of AWARDS){const item=document.createElement('div');item.className='badge-item '+(won.has(a.id)?'earned':'locked');item.setAttribute('aria-label',`${a.name}: ${won.has(a.id)?'unlocked':'locked'}. ${a.desc}`);const emoji=document.createElement('div');emoji.className='emoji';emoji.setAttribute('aria-hidden','true');emoji.textContent=won.has(a.id)?a.icon:'🔒';const name=document.createElement('strong');name.textContent=a.name;const detail=document.createElement('small');detail.textContent=won.has(a.id)?'Unlocked ✓':a.desc;item.append(emoji,name,detail);grid.appendChild(item)}
 }
 function load(){try{const s=localStorage.getItem(KEY);return s?sanitize(JSON.parse(s)):fresh()}catch(e){return fresh()}}
-let data=load(),current=null,answered=false,lock=false,questionStart=0,activeSince=0,tickHandle=null,coachShown=false,shownSteps=0,guided=false;
+let data=load(),current=null,answered=false,lock=false,questionStart=null,solveSeconds=null,activeSince=0,tickHandle=null,coachShown=false,shownSteps=0,guided=false;
 let storageWorking=true;function checkStorage(){try{const p='__mindmath_probe';localStorage.setItem(p,'1');localStorage.removeItem(p);return true}catch(e){return false}}storageWorking=checkStorage();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){storageWorking=false;$('storageWarning').classList.remove('hidden');console.warn('MindMath: browser storage is unavailable. Export a backup to preserve progress.');return false}}
 function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function pick(a){return a[rand(0,a.length-1)]}
-const tens=x=>x-x%10;
-function makeProblem(id,L){
-  let a,b,answer,text,prompt,steps;let base,part,rest,other,n;
-  switch(id){
-    case 'add10':{
-      base=L===1?0:rand(1,Math.min(20,2**(L-1)))*10;const tail=rand(5,9);a=base+tail;b=rand(10-tail,9)+(L>=5?pick([0,10,20]):0);part=10-tail;rest=b-part;answer=a+b;text=`${a} + ${b}`;
-      prompt=`Move ${part} from ${b} to ${a} to reach a round ten.`;steps=[`${a} + ${part} = ${a+part}`,`Now add the remaining ${rest}: ${a+part} + ${rest} = ${answer}`];break;
+function makeProblem(skill,digits,topic){
+  const low=digits===1?1:10**(digits-1),high=10**digits-1;
+  let a=rand(low,high),b=rand(low,high),answer,text,prompt,steps;
+  const available=IDS.filter(id=>TOPICS[id].skill===skill);
+  topic=topic||pick(available);
+  if(skill==='Addition'){
+    if(topic==='add10')b=rand(1,9);
+    if(topic==='addround')b=digits===1?9:rand(1,Math.floor(high/10))*10+9;
+    answer=a+b;text=`${a} + ${b}`;
+    const move=Math.min(b,10-a%10);
+    const part=topic==='addround'?b+1:topic==='add10'?move:Math.floor(b/10)*10||b;
+    const rest=b-part;
+    prompt=topic==='addround'?'Round the second number up, then take away the extra one.':'Add a convenient part first, then add what remains.';
+    steps=[`${a} + ${part} = ${a+part}`,rest<0?`${a+part} − ${-rest} = ${answer}`:`${a+part} + ${rest} = ${answer}`];
+  }else if(skill==='Subtraction'){
+    if(topic==='subround')b=digits===1?9:rand(1,Math.floor(high/10))*10+9;
+    if(a<b)[a,b]=[b,a];
+    answer=a-b;text=`${a} − ${b}`;
+    if(topic==='subcount'){
+      const bridge=Math.min(a,Math.ceil(b/10)*10);
+      prompt='Count up from the smaller number to find the difference.';
+      steps=[`From ${b} to ${bridge} is ${bridge-b}.`,`From ${bridge} to ${a} is ${a-bridge}. Add the gaps: ${answer}.`];
+    }else{
+      const part=topic==='subround'?Math.ceil(b/10)*10:Math.floor(b/10)*10;
+      const rest=b-part;
+      prompt=topic==='subround'?'Subtract a round number, then correct the difference.':'Subtract tens first, then the remaining ones.';
+      steps=[`${a} − ${part} = ${a-part}`,rest<0?`${a-part} + ${-rest} = ${answer}`:`${a-part} − ${rest} = ${answer}`];
     }
-    case 'addcarry':{
-      const max=[0,29,49,79,149,299,599,999,2499][L];a=rand(L===1?11:20,max);const unit=rand(1,9);b=rand(1,Math.max(1,Math.floor(max/10)))*10+unit;
-      if(a%10+unit<10)a=a-a%10+rand(10-unit,9);part=tens(b);rest=b-part;answer=a+b;text=`${a} + ${b}`;
-      prompt=`Keep ${a} in mind. Add the tens of ${b}, then its ones.`;steps=[`Add tens: ${a} + ${part} = ${a+part}`,`Add ones: ${a+part} + ${rest} = ${answer}`];break;
+  }else if(skill==='Multiplication'){
+    b=topic==='mulspecial'?(digits<3?5:pick([5,25,50])):rand(2,9);
+    answer=a*b;text=`${a} × ${b}`;
+    if(topic==='mulspecial'){
+      const scale=b===5?10:100,divisor=scale/b;
+      prompt=`Multiply by ${scale}, then divide by ${divisor}.`;
+      steps=[`${a} × ${scale} = ${a*scale}`,`${a*scale} ÷ ${divisor} = ${answer}`];
+    }else if(topic==='multables'||digits===1){
+      prompt='Use the ×5 fact and add or subtract groups.';
+      const difference=a*(b-5);
+      steps=[`${a} × 5 = ${a*5}`,difference<0?`${a*5} − ${-difference} = ${answer}`:`${a*5} + ${difference} = ${answer}`];
+    }else{
+      const part=Math.floor(a/10)*10,rest=a-part;
+      prompt='Split the larger number and multiply each piece.';
+      steps=[`${part} × ${b} = ${part*b}`,`${rest} × ${b} = ${rest*b}`,`Add the products: ${answer}`];
     }
-    case 'addround':{
-      b=pick((L<=2?[9,19]:L<=4?[9,19,29,49]:L<=6?[19,29,49,99]:[49,99,199,499]));a=rand(6,[0,35,65,110,190,390,700,1200,2800][L]);answer=a+b;text=`${a} + ${b}`;
-      prompt=`${b} is one less than ${b+1}. Add ${b+1}, then take away 1.`;steps=[`${a} + ${b+1} = ${a+b+1}`,`Correct the extra 1: ${a+b+1} − 1 = ${answer}`];break;
+  }else if(skill==='Division'){
+    b=topic==='divhalve'?(digits===1?4:pick([4,8])):rand(2,digits===1?4:9);
+    answer=rand(Math.max(2,Math.ceil(low/b)),Math.floor(high/b));a=answer*b;text=`${a} ÷ ${b}`;
+    if(topic==='divhalve'){
+      prompt='Halve repeatedly.';
+      steps=Array.from({length:Math.log2(b)},(_,i)=>`${a/2**i} ÷ 2 = ${a/2**(i+1)}`);
+    }else if(topic==='divchunk'&&answer>=10){
+      const part=Math.floor(answer/10)*10,rest=answer-part;
+      prompt='Split the dividend into easy multiples of the divisor.';
+      steps=[`${a} = ${part*b} + ${rest*b}`,`Divide each by ${b}: ${part} + ${rest} = ${answer}`];
+    }else{
+      prompt=`Ask which number times ${b} gives ${a}.`;
+      steps=[`${b} × ${answer} = ${a}`,`So ${a} ÷ ${b} = ${answer}`];
     }
-    case 'subbridge':{
-      const max=[0,25,49,79,130,250,500,1000,2400][L];a=rand(L===1?15:22,max);const u=rand(1,9);if(a%10>=u)a=a-a%10+rand(0,u-1);
-      b=rand(0,Math.max(0,Math.floor((a-1)/10)-1))*10+u;if(b>=a)b=u;part=tens(b);rest=b-part;answer=a-b;text=`${a} − ${b}`;
-      prompt=`Subtract the tens of ${b} first, then the last ${rest}.`;steps=[`${a} − ${part} = ${a-part}`,`${a-part} − ${rest} = ${answer}`];break;
+  }else{
+    const multiple=topic==='pctbuild'&&digits>1?20:topic==='pctquarter'&&digits>=3?8:4;
+    a=multiple*rand(Math.ceil(low/multiple),Math.floor(high/multiple));
+    const pct=topic==='pctten'?10:topic==='pctquarter'?pick(digits>=3?[12.5,25,50,75]:[25,50]):digits===1?10:pick([5,15]);
+    answer=a*pct/100;text=`${pct}% of ${a}`;
+    if(pct===12.5||pct===25||pct===50){
+      const divisor=100/pct;
+      prompt=pct===12.5?'12.5% is one eighth.':pct===25?'25% is one quarter.':'50% is one half.';
+      steps=[`${a} ÷ ${divisor} = ${answer}`];
+    }else if(pct===75){
+      prompt='Find a quarter, then triple it.';
+      steps=[`${a} ÷ 4 = ${a/4}`,`${a/4} × 3 = ${answer}`];
+    }else{
+      prompt='Find 10% first. Half of that is 5%.';
+      steps=[`10% of ${a} = ${a/10}`];
+      if(pct!==10)steps.push(`5% of ${a} = ${a/20}`);
+      if(pct===15)steps.push(`Add 10% and 5%: ${a/10} + ${a/20} = ${answer}`);
     }
-    case 'subcount':{
-      b=rand(L===1?8:25,[0,22,50,80,140,260,550,1050,2400][L]);b=b-b%10+rand(2,7);const nextTen=Math.ceil(b/10)*10;rest=rand(2,Math.max(4,Math.min(30,4*L+5)));a=nextTen+rest;answer=a-b;text=`${a} − ${b}`;
-      prompt=`Instead of subtracting, count up from ${b} to ${a}.`;steps=[`${b} → ${nextTen}: add ${nextTen-b}`,`${nextTen} → ${a}: add ${a-nextTen}`,`Total increase: ${nextTen-b} + ${a-nextTen} = ${answer}`];break;
-    }
-    case 'subround':{
-      b=pick(L<=2?[9,19]:L<=4?[9,19,29,49]:L<=6?[19,29,49,99]:[49,99,199,499]);a=rand(b+3,b+[0,30,55,90,160,280,490,980,2200][L]);answer=a-b;text=`${a} − ${b}`;
-      prompt=`${b} is 1 below ${b+1}. Subtract ${b+1}, then add 1 back.`;steps=[`${a} − ${b+1} = ${a-b-1}`,`Add 1 back: ${a-b-1} + 1 = ${answer}`];break;
-    }
-    case 'multables':{
-      a=rand(2,Math.min(12,5+L));b=rand(2,Math.min(12,5+L));answer=a*b;text=`${a} × ${b}`;
-      prompt=`Use the easier ×5 fact and add or subtract groups of ${a}.`;const five=5*a;
-      if(b>=5){steps=[`${a} × 5 = ${five}`,`${a} × ${b} = ${five} + ${a} × ${b-5} = ${answer}`]}
-      else{steps=[`${a} × 5 = ${five}`,`Take away ${5-b} group(s) of ${a}: ${five} − ${a*(5-b)} = ${answer}`]}
-      break;
-    }
-    case 'mulsplit':{
-      a=rand(L<=2?11:14,[0,15,25,39,59,89,129,249,499][L]);b=rand(2,L===1?4:L<=3?7:L<=5?12:23);answer=a*b;text=`${a} × ${b}`;
-      if(L>=7&&b>=10){part=tens(b);rest=b-part;prompt=`Split ${b} into ${part} and ${rest}.`;steps=[`${a} × ${part} = ${a*part}`,`${a} × ${rest} = ${a*rest}`,`Add: ${a*part} + ${a*rest} = ${answer}`]}
-      else{part=tens(a);rest=a-part;prompt=`Split ${a} into ${part} and ${rest}.`;steps=[`${part} × ${b} = ${part*b}`,`${rest} × ${b} = ${rest*b}`,`Add: ${part*b} + ${rest*b} = ${answer}`]}
-      break;
-    }
-    case 'mulspecial':{
-      b=pick(L<=2?[5,25]:L<=4?[5,25,50]:[5,25,50]);a=b===25?rand(1,Math.min(22,3*L+2))*4:rand(2,[0,15,20,35,45,65,95,140,220][L]);answer=a*b;text=`${a} × ${b}`;
-      if(b===5){prompt='Multiplying by 5 is multiplying by 10 and halving.';steps=[`${a} × 10 = ${a*10}`,`${a*10} ÷ 2 = ${answer}`]}
-      else if(b===25){prompt='Multiplying by 25 is multiplying by 100 and dividing by 4.';steps=[`${a} × 100 = ${a*100}`,`${a*100} ÷ 4 = ${answer}`]}
-      else{prompt='Multiplying by 50 is multiplying by 100 and halving.';steps=[`${a} × 100 = ${a*100}`,`${a*100} ÷ 2 = ${answer}`]}
-      break;
-    }
-    case 'divinverse':{
-      b=rand(2,Math.min(12,5+L));answer=rand(2,Math.min(12,5+L));a=b*answer;text=`${a} ÷ ${b}`;
-      prompt=`Turn this into a multiplication question: ${b} × ? = ${a}.`;steps=[`Count in ${b}s or recall its times table.`,`${b} × ${answer} = ${a}, so ${a} ÷ ${b} = ${answer}`];break;
-    }
-    case 'divchunk':{
-      b=rand(2,Math.min(15,4+L*2));part=pick(L<=2?[5,10]:L<=5?[5,10,20]:[10,20,30,40]);rest=rand(1,L<=2?5:Math.min(16,L*3));answer=part+rest;a=b*answer;text=`${a} ÷ ${b}`;
-      prompt=`Find a round multiple of ${b}, then divide the remainder.`;steps=[`Split ${a} into ${b*part} + ${b*rest}`,`${b*part} ÷ ${b} = ${part} and ${b*rest} ÷ ${b} = ${rest}`,`Add: ${part} + ${rest} = ${answer}`];break;
-    }
-    case 'divhalve':{
-      b=pick(L<=2?[4]:L<=4?[4,8]:[4,8,16]);answer=rand(2,[0,9,14,20,28,40,65,100,180][L]);a=b*answer;text=`${a} ÷ ${b}`;
-      prompt=`${b} equals ${Math.log2(b)} repeated divisions by 2.`;steps=[];let v=a;for(let i=0;i<Math.log2(b);i++){steps.push(`${v} ÷ 2 = ${v/2}`);v/=2}break;
-    }
-    case 'pctten':{
-      const pct=pick(L<=2?[10,20]:L<=4?[10,20,30]:[10,20,30,40,60]);a=rand(2,Math.min(80,6+L*10))*10;answer=a*pct/100;text=`${pct}% of ${a}`;
-      prompt='Find 10% by moving one decimal place; multiply that by the number of tens.';steps=[`10% of ${a} = ${a/10}`,`${pct}% is ${pct/10} × ${a/10} = ${answer}`];break;
-    }
-    case 'pctquarter':{
-      const pct=pick(L<=2?[50,25]:L<=4?[50,25,75]:[50,25,75,12.5]);a=rand(2,Math.min(80,8+L*8))*8;answer=a*pct/100;text=`${pct}% of ${a}`;
-      if(pct===50){prompt='50% is half.';steps=[`${a} ÷ 2 = ${answer}`]}
-      if(pct===25){prompt='25% is one quarter.';steps=[`${a} ÷ 2 = ${a/2}`,`${a/2} ÷ 2 = ${answer}`]}
-      if(pct===75){prompt='75% is three quarters.';steps=[`25% of ${a} = ${a/4}`,`Three quarters: ${a/4} × 3 = ${answer}`]}
-      if(pct===12.5){prompt='12.5% is one eighth.';steps=[`${a} ÷ 2 = ${a/2}`,`${a/2} ÷ 2 = ${a/4}`,`${a/4} ÷ 2 = ${answer}`]}
-      break;
-    }
-    case 'pctbuild':{
-      const pct=pick(L<=2?[5,15]:L<=4?[5,15,35]:[5,15,35,45,65]);a=rand(2,Math.min(60,6+L*9))*20;answer=a*pct/100;text=`${pct}% of ${a}`;
-      const whole=Math.floor(pct/10);prompt='Find 10%, then 5% by halving it. Combine those pieces.';steps=[`10% of ${a} = ${a/10}`,`5% of ${a} = ${a/20}`];if(whole>0)steps.push(`${whole*10}% + 5% = ${whole} × ${a/10} + ${a/20} = ${answer}`);else steps.push(`So ${pct}% of ${a} = ${answer}`);break;
-    }
-    default:throw Error('Unknown technique');
   }
-  if(!Number.isFinite(answer)||!Number.isInteger(answer)||!steps.length)throw Error('Bad problem generated: '+id);
-  return {skill:TOPICS[id].skill,topic:id,level:L,text,answer,prompt,steps,auto:false};
+  return {skill,topic,level:digits,digits,text,answer,prompt,steps,target:speedTargets[skill][digits-1]};
 }
-function currentLevelEvents(id){const level=data.skills[TOPICS[id].skill].level;return data.topics[id].history.filter(h=>h.level===level).slice(-8)}
-function speedLimit(skill,level){return ({Addition:23000,Subtraction:26000,Multiplication:30000,Division:32000,Percentages:35000})[skill]+(level-1)*2500}
-function evidence(id){const e=currentLevelEvents(id),n=e.length,wrong=e.filter(h=>!h.correct).length,help=e.filter(h=>h.guided).length,slow=e.filter(h=>h.correct&&!h.guided&&h.ms>speedLimit(TOPICS[id].skill,data.skills[TOPICS[id].skill].level)).length;return{e,n,wrong,help,slow}}
+function currentLevelEvents(id){
+  const digits=practiceDigits(TOPICS[id].skill);
+  return data.topics[id].history.filter(h=>h.level===digits&&Number.isFinite(h.points)).slice(-8);
+}
+function evidence(id){
+  const e=currentLevelEvents(id),n=e.length,wrong=e.filter(h=>!h.correct).length,help=e.filter(h=>h.guided).length;
+  const slow=e.filter(h=>h.correct&&!h.guided&&h.points<BAND_ADVANCE).length;
+  return {e,n,wrong,help,slow};
+}
 function topicState(id){
   const {e,n,wrong,help,slow}=evidence(id);
-  if(n>=4&&e.slice(-4).every(h=>h.correct&&!h.guided&&h.ms<=speedLimit(TOPICS[id].skill,data.skills[TOPICS[id].skill].level)))return 'solid';
+  if(n>=4&&e.slice(-4).every(h=>h.correct&&!h.guided&&h.points>=BAND_ADVANCE))return 'solid';
   if(n>=2&&wrong>=2||n>=3&&(wrong>=2||help>=3||slow>=3))return 'weak';
   if(n>=2&&(wrong||help>=1||slow>=2))return 'practice';
   return n?'building':'new';
 }
 function weakest(){
-  const arr=IDS.filter(id=>topicState(id)==='weak').map(id=>{const a=evidence(id);return{id,score:(a.wrong*3+a.help+a.slow*.8)/a.n+a.e.slice(-3).filter(x=>!x.correct).length*.2}});
+  const arr=IDS.filter(id=>data.settings.operations.includes(TOPICS[id].skill)&&topicState(id)==='weak').map(id=>{const a=evidence(id);return{id,score:(a.wrong*3+a.help+a.slow*.8)/a.n+a.e.slice(-3).filter(x=>!x.correct).length*.2}});
   arr.sort((a,b)=>b.score-a.score);return arr[0]?.id||null;
 }
 function recentCount(id){return data.session?.results.filter(r=>r.topic===id).length||0}
 function chooseTopic(){
-  const s=data.session,previous=s.results.at(-1);
-  // One immediate coached retry after an error, capped to avoid frustration.
-  if(previous&&!previous.correct&&previous.topic&&recentCount(previous.topic)<3)return previous.topic;
-  const measured=(data.speedTests||[]).filter(t=>t.protocol===2).at(-1);
-  if(measured&&s.results.length%3===1){
-    const scores=NAMES.map(skill=>({skill,score:speedScore(measured.rows.filter(r=>r.skill===skill))})).sort((a,b)=>a.score-b.score);
-    const topics=IDS.filter(id=>TOPICS[id].skill===scores[0].skill&&recentCount(id)<3);
-    if(topics.length)return pick(topics);
-  }
+  const results=data.session.results,previous=results.at(-1);
+  const eligible=IDS.filter(id=>data.settings.operations.includes(TOPICS[id].skill));
+  if(previous&&!previous.correct&&eligible.includes(previous.topic)&&recentCount(previous.topic)<3)return previous.topic;
+  const quest=data.game.quests[today()];
+  if(quest?.kind==='focus'&&!quest.done&&eligible.includes(quest.topic)&&recentCount(quest.topic)<3&&results.length%3===0)return quest.topic;
   const focus=weakest();
-  if(focus&&recentCount(focus)<4&&(s.results.length%3===0||s.results.length===0))return focus;
-  const candidates=IDS.filter(id=>!(focus&&id===focus&&recentCount(id)>=4));
-  // Prefer the least-exposed techniques while keeping a varied daily mix.
-  let min=Infinity,short=[];
-  for(const id of candidates){const level=data.skills[TOPICS[id].skill].level;
-    const seen=data.topics[id].history.filter(x=>x.level===level).length;
-    const score=seen+recentCount(id)*2+(topicState(id)==='solid'?2:0);
-    if(score<min){min=score;short=[id]}else if(score===min)short.push(id);
+  if(focus&&recentCount(focus)<3&&results.length%3===0)return focus;
+  let candidates=eligible;
+  if(results.length%3===1){
+    const weak=[...data.settings.operations].sort((a,b)=>rankInfo(a).progress-rankInfo(b).progress)[0];
+    const targeted=eligible.filter(id=>TOPICS[id].skill===weak&&recentCount(id)<3);
+    if(targeted.length)candidates=targeted;
   }
-  return pick(short.length?short:IDS);
-}
-function adjust(skill){
-  const s=data.skills[skill],h=s.history.slice(-10);if(h.length<10)return 0;
-  const good=h.filter(x=>x.correct).length,independent=h.filter(x=>x.correct&&!x.guided),speed=independent.reduce((t,x)=>t+x.ms,0)/Math.max(1,independent.length);
-  const types=new Set(h.map(x=>x.topic).filter(Boolean)).size;
-  if(good>=9&&independent.length>=8&&speed<=speedLimit(skill,s.level)&&types>=2&&s.level<8&&!IDS.some(id=>TOPICS[id].skill===skill&&topicState(id)==='weak')){
-    s.level++;s.history=[];return 1;
-  }
-  if(good<=5&&s.level>1){s.level--;s.history=[];return -1}
-  return 0;
+  const visits=id=>recentCount(id)*3+currentLevelEvents(id).length;
+  const least=Math.min(...candidates.map(visits));
+  return pick(candidates.filter(id=>visits(id)===least));
 }
 function show(view){for(const v of ['home','quiz','result'])$(v+'View').classList.toggle('hidden',v!==view)}
 function focusDescription(id){const x=evidence(id),pieces=[];if(x.wrong)pieces.push(`${x.wrong} incorrect`);if(x.slow)pieces.push(`${x.slow} slow`);if(x.help)pieces.push(`${x.help} with tips`);return`${TOPICS[id].title} (${TOPICS[id].skill}). Recent evidence: ${pieces.join(', ')||'building consistency'} from ${x.n} tries at this difficulty.`}
 function render(){
   const days=Object.values(data.days),all=days.reduce((t,d)=>t+d.total,0);
+  renderSettings();
   const rank=rankInfo();$('rankName').textContent=rank.name;$('rankNumber').innerHTML=`${rank.number}<small>RANK</small>`;
   $('xpLabel').textContent=rank.number?rank.progress+'/100 Rank score · game title':'Take an assessment to establish your Rank';
   $('xpFill').style.width=rank.progress+'%';$('xpTrack').setAttribute('aria-valuenow',String(rank.progress));
   $('storageWarning').classList.toggle('hidden',storageWorking);$('dateLabel').textContent=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
   $('skills').replaceChildren();for(const n of NAMES){
     const skillRank=rankInfo(n);
-    const box=document.createElement('div');box.className='skill';const title=document.createElement('span');title.textContent=n;const lev=document.createElement('span');lev.className='level';lev.textContent=skillRank.name+' · game title';
-    const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=skillRank.progress+'%';bar.appendChild(fill);box.append(title,lev,bar);$('skills').appendChild(box);
+    const box=document.createElement('div');box.className='skill';const title=document.createElement('span');title.textContent=n;const lev=document.createElement('span');lev.className='level';lev.textContent=data.settings.operations.includes(n)?skillRank.name:'Excluded';
+    const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=(data.settings.operations.includes(n)?skillRank.progress:0)+'%';bar.appendChild(fill);box.append(title,lev,bar);$('skills').appendChild(box);
   }
   const focus=weakest(),complete=!!data.days[today()];
   const insight=$('homeInsight');insight.replaceChildren();const head=document.createElement('div');head.className='focushead';const strong=document.createElement('strong');strong.textContent=focus?'Your next focus':'Your learning plan';head.appendChild(strong);insight.appendChild(head);
@@ -368,13 +449,13 @@ function render(){
   desc.textContent+=focus?`${focusDescription(focus)} We'll revisit this technique with guided examples, then fade the tips.`:'We are sampling different techniques to discover your strengths and gaps. Wrong answers become a short coached retry.';insight.appendChild(desc);
   const q=questPlan(),qr=data.session?.results||[];const homeQ=$('homeQuest');homeQ.replaceChildren(...questElement(q,qr));
   renderTrophies();
-  $('startBtn').disabled=complete;$('startBtn').textContent=complete?'Completed for today ✓':data.session?'Resume today’s session':'Start today’s session';
+  $('startBtn').disabled=complete||!!speedRun;$('startBtn').textContent=complete?'Completed for today ✓':data.session?'Resume today’s session':'Start today’s session';
   $('history').textContent=all?`${all} problems over ${days.length} day${days.length===1?'':'s'}`:'Complete a session to start tracking.';
   const map=$('microList');map.replaceChildren();for(const id of IDS){const t=TOPICS[id],e=evidence(id),st=topicState(id),line=document.createElement('div');line.className='micro';const name=document.createElement('span');name.textContent=`${t.title} · ${t.skill}`;const label=document.createElement('span');label.className='status '+(st==='weak'?'weak':st==='solid'?'solid':'');label.textContent=({new:'Not tested',building:'Exploring',practice:'Needs reinforcement',weak:'Targeted drill',solid:'Independent ✓'})[st]+(e.n?` · ${e.n} recent`:'');line.append(name,label);map.appendChild(line)}
 }
 function showCoach(auto=false,reveal=0){
   if(!current)return;
-  coachShown=true;guided=guided||!answered;if(!answered&&data.session?.current){data.session.current.guided=guided;save()}
+  coachShown=true;guided=guided||!answered;
   $('coachPanel').classList.remove('hidden');$('coachKind').textContent=auto?'Suggested method':'Mental math technique';$('coachTitle').textContent=TOPICS[current.topic].title;
   $('coachPrompt').textContent=current.prompt;$('showCoachBtn').classList.add('hidden');
   shownSteps=clamp(Math.max(shownSteps,reveal),0,current.steps.length);renderSteps();
@@ -387,55 +468,94 @@ function renderSteps(){
 }
 function revealStep(){if(!current)return;if(!coachShown)showCoach(false);shownSteps=Math.min(current.steps.length,shownSteps+1);guided=guided||!answered;renderSteps()}
 function hideCoach(){if(answered)return;coachShown=false;$('coachPanel').classList.add('hidden');$('showCoachBtn').classList.remove('hidden')}
-function shouldAutoCoach(id){const e=currentLevelEvents(id);if(!e.length)return 0;const last=e.at(-1);const last2=e.slice(-2);if(last2.length===2&&last2.every(x=>x.correct))return 0;
-  if(last2.length===2&&last2.every(x=>!x.correct))return 1;
-  return !last.correct||topicState(id)==='weak'?0:-1;
-}
-function displayQuestion(recover=false){
+function displayQuestion(focus=true){
   if(!data.session)return;
+  current=null;questionStart=null;solveSeconds=null;
   answered=false;coachShown=false;guided=false;shownSteps=0;
-  if(recover&&data.session.current)current=data.session.current;
-  else{const id=chooseTopic();current=makeProblem(id,data.skills[TOPICS[id].skill].level);data.session.current=current;save()}
-  guided=!!current.guided;questionStart=elapsed();$('topicName').textContent=`${current.skill} · ${rankInfo(current.skill).name}`;
-  $('counter').textContent=`Question ${data.session.results.length+1} / ${MAX_Q}`;$('score').textContent=rankInfo(current.skill).name;
-  $('sessionFill').style.width=`${data.session.results.length/MAX_Q*100}%`;$('drillLabel').textContent=`Technique: ${TOPICS[current.topic].title}`;
-  const combo=comboOf(data.session.results);$('quizCombo').textContent=combo>1?`⚡ ${combo} correct in a row!`:'Build a combo with correct answers';
-  const q=data.game.quests[today()]||questPlan(),qcfg=questInfo(q);$('quizQuest').textContent=`🗺️ ${qcfg.name}: ${Math.min(questProgress(q,data.session.results),qcfg.target)}/${qcfg.target}`;
-  $('questionText').textContent=current.text;$('answer').value='';$('answer').disabled=false;$('submitBtn').disabled=false;$('answerForm').classList.remove('hidden');$('feedback').textContent='';$('feedback').className='feedback';
-  $('coachPanel').classList.add('hidden');$('showCoachBtn').classList.remove('hidden');$('nextBtn').classList.add('hidden');
-  const hint=shouldAutoCoach(current.topic);
-  // Previously missed concepts receive a gentle strategy prompt. After another miss, reveal one step.
-  if(guided||hint>=0&&currentLevelEvents(current.topic).length>0)showCoach(true,Math.max(0,hint));
-  if(!recover)$('answer').focus();else $('answer').focus();
+  $('topicName').textContent='Ranked practice';
+  $('counter').textContent=`Question ${data.session.results.length+1} / ${MAX_Q}`;
+  $('score').textContent=rankInfo().name;
+  $('sessionFill').style.width=`${data.session.results.length/MAX_Q*100}%`;
+  $('drillLabel').textContent='';
+  const combo=comboOf(data.session.results);
+  $('quizCombo').textContent=combo>1?`⚡ ${combo} correct in a row!`:'Build a combo with correct answers';
+  const q=data.game.quests[today()]||questPlan(),qcfg=questInfo(q);
+  $('quizQuest').textContent=`🗺️ ${qcfg.name}: ${Math.min(questProgress(q,data.session.results),qcfg.target)}/${qcfg.target}`;
+  $('questionText').textContent='Ready when you are';
+  $('timer').textContent=timerText();
+  $('answer').value='';$('feedback').textContent='';$('feedback').className='feedback';
+  $('practiceTime').textContent='';$('practiceReady').classList.remove('hidden');$('speedStats').disabled=false;
+  for(const id of ['practiceSolved','answerForm','coachPanel','showCoachBtn','nextBtn'])$(id).classList.add('hidden');
+  if(focus)$('practiceReady').focus();
+}
+function revealQuestion(){
+  if(!data.session||current||document.hidden)return;
+  const id=chooseTopic(),skill=TOPICS[id].skill,band=practiceDigits(skill);
+  const recent=data.skills[skill].history.filter(h=>!h.guided&&Number.isFinite(h.points)).at(-1);
+  // A difficult solve is followed by a shorter problem before trying the higher band again.
+  const digits=recent?.level===band&&recent.points<65?Math.max(1,band-1):band;
+  current=makeProblem(skill,digits,id);
+  $('topicName').textContent=`${skill} · ${rankInfo(skill).name}`;
+  $('drillLabel').textContent=`${digits}-digit band · target ${current.target}s`;
+  $('questionText').textContent=current.text;
+  $('practiceReady').classList.add('hidden');
+  $('practiceSolved').classList.remove('hidden');
+  $('showCoachBtn').classList.remove('hidden');
+  $('practiceSolved').focus();
+  questionStart=performance.now();$('speedStats').disabled=true;resumeClock();
+}
+function stopSolving(){
+  if(questionStart===null||!current||!data.session)return;
+  solveSeconds=Math.max(2,(performance.now()-questionStart)/1000);
+  questionStart=null;stopClock();$('speedStats').disabled=false;
+  $('practiceTime').textContent=`${solveSeconds.toFixed(1)}s solve time`;
+  $('questionText').textContent='Enter your answer';
+  for(const id of ['practiceSolved','coachPanel','showCoachBtn'])$(id).classList.add('hidden');
+  $('answerForm').classList.remove('hidden');
+  $('answer').disabled=false;$('submitBtn').disabled=false;$('answer').focus();
 }
 function elapsed(){return Math.min(MAX_MS,(data.session?.elapsed||0)+(activeSince?Date.now()-activeSince:0))}
 function commitTime(){if(activeSince&&data.session){data.session.elapsed=elapsed();activeSince=0;save()}}
 function timerText(){let n=Math.max(0,Math.ceil((MAX_MS-elapsed())/1000));return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')} left`}
-function tick(){if(!data.session)return;$('timer').textContent=timerText();if(elapsed()>=MAX_MS){stopClock();if(answered){$('nextBtn').textContent='See results →'}else finish()}}
+function tick(){
+  if(!data.session)return;
+  $('timer').textContent=timerText();
+  if(questionStart!==null)$('practiceTime').textContent=`${((performance.now()-questionStart)/1000).toFixed(1)}s`;
+  if(elapsed()>=MAX_MS)finish();
+}
 function resumeClock(){if(!activeSince&&data.session&&!document.hidden){activeSince=Date.now();tickHandle=setInterval(tick,250);tick()}}
 function stopClock(){commitTime();if(tickHandle){clearInterval(tickHandle);tickHandle=null}}
 function next(){if(!data.session)return;if(data.session.results.length>=MAX_Q||elapsed()>=MAX_MS){finish();return}displayQuestion()}
-function start(){if(data.days[today()])return;
-  if(!data.session||data.session.date!==today())data.session={date:today(),elapsed:0,results:[],current:null};
-  if(!data.game.quests[today()])data.game.quests[today()]=questPlan();
+function start(){if(data.days[today()]||speedRun)return;
+  if(!data.session||data.session.date!==today())data.session={date:today(),elapsed:0,results:[]};
+  data.game.quests[today()]=questPlan();
   if(data.session.elapsed>=MAX_MS||data.session.results.length>=MAX_Q){finish();return}
-  show('quiz');displayQuestion(!!data.session.current);resumeClock();tick();
+  save();renderSettings();show('quiz');displayQuestion();
 }
 function check(ev){
-  ev.preventDefault();if(answered||!current||lock)return;
+  ev.preventDefault();if(answered||!current||lock||solveSeconds===null)return;
   const raw=$('answer').value.trim();if(!/^-?\d+(?:\.\d+)?$/.test(raw)){$('feedback').textContent='Enter a number (decimals are fine).';return}
   lock=true;
-  const right=Math.abs(Number(raw)-current.answer)<1e-8,ms=clamp(Math.round(elapsed()-questionStart),0,120000),id=current.topic,skill=current.skill;
+  const right=Math.abs(Number(raw)-current.answer)<1e-8,id=current.topic,skill=current.skill;
+  const ms=Math.round(solveSeconds*1000),points=answerPoints(right,current.target,solveSeconds);
+  const before=practiceDigits(skill);
+  if(!guided){
+    const index=current.digits-1;
+    const previous=data.bands[skill][index];
+    // A new band requires repeated strong solves before it can unlock the next band.
+    data.bands[skill][index]=previous===null?points*.6:previous*.65+points*.35;
+  }
+  const change=Math.sign(practiceDigits(skill)-before);
   const t=data.topics[id],s=data.skills[skill];t.attempts++;s.attempts++;if(right){t.correct++;s.correct++}
-  t.history.push({correct:right,ms,guided,level:current.level});t.history=t.history.slice(-16);
-  s.history.push({correct:right,ms,guided,level:current.level,topic:id});s.history=s.history.slice(-30);
-  const change=adjust(skill);if(change===1)data.game.levelUps++;
+  t.history.push({correct:right,ms,guided,level:current.level,points});t.history=t.history.slice(-16);
+  s.history.push({correct:right,ms,guided,level:current.level,topic:id,points});s.history=s.history.slice(-30);
+  if(change===1)data.game.levelUps++;
   const prevCombo=comboOf(data.session.results),combo=right?prevCombo+1:0;
   data.game.bestCombo=Math.max(data.game.bestCombo,combo);
   if(right){if(guided)data.game.guidedWins++;else data.game.independent++}
   const xp=right?(guided?6:12)+(combo>=2?2:0)+(change===1?20:0):1;
   data.game.xp+=xp;
-  data.session.results.push({skill,topic:id,correct:right,change,level:current.level,guided,xp});data.session.current=null;
+  data.session.results.push({skill,topic:id,correct:right,change,level:current.level,guided,xp});
   const q=data.game.quests[today()];let completedQuest=false;
   if(q&&!q.done&&questProgress(q,data.session.results)>=questInfo(q).target){q.done=true;data.game.xp+=QUEST_BONUS;completedQuest=true}
   $('quizCombo').textContent=combo>=2?`⚡ ${combo} correct in a row!`:'Build a combo with correct answers';
@@ -445,7 +565,7 @@ function check(ev){
   $('feedback').textContent=(right?`Correct — ${current.answer}. `:`Answer: ${current.answer}. `)+`+${xp} XP. `+(completedQuest?`Daily quest complete! +${QUEST_BONUS} XP. `:'')+(combo>=3?`${combo}-answer combo! `:'')+(change===1?'Harder practice unlocked!':change===-1?'Focused foundation practice is next.':right&&guided?'Next, try this without the tip.':'');
   $('feedback').className='feedback '+(right?'good':'wrong');
   $('answer').disabled=true;$('submitBtn').disabled=true;$('answerForm').classList.add('hidden');
-  $('score').textContent=rankInfo().name;
+  $('score').textContent=rankInfo().name;render();
   if(!right){showCoach(true,current.steps.length);$('coachKind').textContent='Worked solution'}
   $('nextBtn').classList.remove('hidden');$('nextBtn').textContent=data.session.results.length>=MAX_Q||elapsed()>=MAX_MS?'See results →':'Next →';$('nextBtn').focus();
   save();lock=false;
@@ -453,12 +573,20 @@ function check(ev){
 }
 function finish(){
   if(!data.session)return;stopClock();const r=data.session.results,total=r.length,correct=r.filter(v=>v.correct).length;
-  if(total)data.days[data.session.date]={total,correct};
+  if(total){
+    const day={total,correct},rank=rankInfo();
+    const measured=new Set(r.filter(row=>!row.guided).map(row=>row.skill));
+    if(rank.number&&measured.size){
+      const operationRanks=Object.fromEntries([...measured].filter(skill=>rankInfo(skill).number).map(skill=>[skill,rankInfo(skill).progress]));
+      Object.assign(day,{rank:rank.progress,scope:rankScope(),operationRanks,recordedAt:Date.now()});
+    }
+    data.days[data.session.date]=day;
+  }
   const newAwards=total?collectAwards():[],earnedXP=r.reduce((sum,x)=>sum+(x.xp||0),0),questDone=!!data.game.quests[data.session.date]?.done;
-  data.session=null;current=null;save();
+  data.session=null;current=null;questionStart=null;solveSeconds=null;save();
   if(!total){show('home');render();return}
   $('resultScore').textContent=rankInfo().name;$('resultTitle').textContent=correct/total>=.85?'Strong practice today':'Good work showing up';
-  $('resultText').textContent='Retake the Rank assessment to measure your progress. Your next practice adapts to your recent solutions.';
+  $('resultText').textContent='Independent answers from this session count toward Rank. Your next session builds on your recent performance.';
   const up=r.filter(x=>x.change===1).map(x=>x.skill),down=r.filter(x=>x.change===-1).map(x=>x.skill),focus=weakest();
   let msg='';if(up.length)msg+=`Harder practice: ${[...new Set(up)].join(', ')}. `;if(down.length)msg+=`Foundation review: ${[...new Set(down)].join(', ')}. `;
   if(focus)msg+=`Next focus: ${TOPICS[focus].title}. ${TOPICS[focus].summary}`;
@@ -470,118 +598,265 @@ function finish(){
   show('result');render();
 }
 function buildLibrary(){const box=$('library');for(const id of IDS){const t=TOPICS[id],item=document.createElement('div');item.className='library-item';const strong=document.createElement('strong');strong.textContent=`${t.title} · ${t.skill}`;const info=document.createElement('small');info.textContent=`${t.summary} Example: ${t.example}`;item.append(strong,info);box.appendChild(item)}}
+$('practiceReady').addEventListener('click',revealQuestion);$('practiceSolved').addEventListener('click',stopSolving);
 $('startBtn').addEventListener('click',start);$('answerForm').addEventListener('submit',check);$('showCoachBtn').addEventListener('click',()=>showCoach());$('stepBtn').addEventListener('click',revealStep);$('hideCoachBtn').addEventListener('click',hideCoach);$('nextBtn').addEventListener('click',next);$('finishBtn').addEventListener('click',finish);$('backBtn').addEventListener('click',()=>{show('home');render()});
-$('exportBtn').addEventListener('click',()=>{if(data.session)commitTime();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`mindmath-backup-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)});
+$('exportBtn').addEventListener('click',()=>{const snapshot=data.session?{...data,session:{...data.session,elapsed:elapsed()}}:data;const blob=new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`mindmath-backup-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)});
 $('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=sanitize(JSON.parse(await file.text()));if(!confirm('Replace all saved progress with this backup?'))return;stopClock();data=imported;save();show('home');cancelSpeedTest('Backup imported.')}catch(err){alert('This is not a valid MindMath backup.')}finally{e.target.value=''}});
 $('resetBtn').addEventListener('click',()=>{if(!confirm('Delete all progress saved in this browser? This cannot be undone without a backup.'))return;stopClock();data=fresh();save();show('home');cancelSpeedTest('Progress reset.')});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)stopClock();else if(!$('quizView').classList.contains('hidden'))resumeClock()});window.addEventListener('pagehide',stopClock);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&questionStart!==null&&data.session&&!$('quizView').classList.contains('hidden')){
+    stopClock();displayQuestion(false);
+    $('feedback').textContent='Timer interrupted. Press Ready for a fresh question.';
+  }
+});
+window.addEventListener('pagehide',stopClock);
 // Stale previous-day session becomes an ordinary completed day; no extra hidden work is credited.
 if(data.session&&data.session.date!==today()){const r=data.session.results;if(r.length)data.days[data.session.date]={total:r.length,correct:r.filter(x=>x.correct).length};data.session=null;save()}
-let speedRun=null,speedStarted=0,speedSeconds=null;
+let speedRun=null,speedStarted=null,speedSeconds=null;
+function answerPoints(correct,target,seconds){
+  return correct?100*Math.min(1,target/Math.max(2,seconds)):0;
+}
 function speedScore(rows){
-  return Math.round(100*rows.reduce((sum,r)=>sum+(r.correct?Math.min(1,r.target/Math.max(2,r.seconds)):0),0)/rows.length);
+  return rows.reduce((sum,r)=>sum+answerPoints(r.correct,r.target,r.seconds),0)/rows.length;
 }
 function speedRank(score){
   return RANKS[Math.min(RANKS.length-1,Math.floor(score/5))].name;
 }
-function speedRender(){
-  const box=$('speedReport');box.replaceChildren();
-  const tests=(data.speedTests||[]).filter(t=>t.protocol===2);
-  if(!tests.length){box.textContent=(data.speedTests?.length?'Earlier tests included typing time and are kept in your backup. ':'')+'Complete a new test to establish your Rank baseline.';return}
-  const test=tests.at(-1);
-  const title=document.createElement('h3');
-  title.textContent=speedRank(speedScore(test.rows))+' · '+speedScore(test.rows)+'/100 Rank score · game title';
-  box.append(title);
-  const explanation=document.createElement('p');
-  explanation.textContent='Incorrect and skipped answers score zero. Correct answers earn up to 100 points based on solve time. Two samples per digit band are provisional. Most recent test: '+new Date(test.date).toLocaleString();
-  box.append(explanation);
-  for(const skill of Object.keys(speedTargets)){
-    const rows=test.rows.filter(r=>r.skill===skill),score=speedScore(rows);
-    const h=document.createElement('h4');h.textContent=skill+' · '+speedRank(score);
-    const meter=document.createElement('meter');meter.min=0;meter.max=100;meter.value=score;meter.style.width='100%';meter.setAttribute('aria-label',skill+' speed and accuracy score '+score);
-    const info=document.createElement('p');
-    info.textContent=score+'/100 Rank score';
-    box.append(h,meter,info);
-    for(let digits=1;digits<=4;digits++){
-      const band=rows.filter(r=>r.digits===digits);
-      const p=document.createElement('p');
-      p.textContent=digits+'-digit band · '+speedRank(speedScore(band))+' · '+speedScore(band)+'/100 Rank score · target '+speedTargets[skill][digits-1]+'s';
-      box.append(p);
-    }
-    const tips={Addition:'Make a ten, then add chunks. 48 + 27 = 48 + 20 + 7 = 75.',Subtraction:'Round and compensate. 83 − 29 = 83 − 30 + 1 = 54.',Multiplication:'Split the number. 24 × 7 = 20 × 7 + 4 × 7 = 168.',Percentages:'Find 10% by dividing by ten; 25% is one quarter and 50% is one half.',Division:'Reverse multiplication or split exact chunks. 96 ÷ 6 = 60 ÷ 6 + 36 ÷ 6 = 16.'};
-    const tip=document.createElement('p');tip.textContent=(score<70?'Practice focus. ':'Keep sharpening. ')+tips[skill];box.append(tip);
+
+const optionInputs=NAMES.map(skill=>{
+  const label=document.createElement('label'),input=document.createElement('input');
+  input.type='checkbox';input.value=skill;label.append(input,' '+skill);$('operationOptions').append(label);
+  return input;
+});
+function renderSettings(){
+  const {operations,maxDigits}=data.settings;
+  const busy=!!(data.session||speedRun);
+  const only=operations.length===1;
+  for(const input of optionInputs){
+    input.checked=operations.includes(input.value);
+    input.disabled=busy||(only&&input.checked);
   }
-  const h=document.createElement('h3');h.textContent='Your test history';box.append(h);
-  tests.slice(-10).forEach(t=>{
-    const label=document.createElement('p');label.textContent=new Date(t.date).toLocaleDateString()+' · '+speedRank(speedScore(t.rows))+' · '+speedScore(t.rows)+'/100 Rank score';
-    const bar=document.createElement('meter');bar.min=0;bar.max=100;bar.value=speedScore(t.rows);bar.style.width='100%';bar.setAttribute('aria-label',label.textContent);box.append(label,bar);
-  });
-  if(tests.length>1){
-    const delta=speedScore(test.rows)-speedScore(tests[0].rows);
-    const p=document.createElement('p');p.textContent='Change from baseline: '+(delta>=0?'+':'')+delta+' score points on the same balanced test format. Daily practice will prioritize your lowest-scoring operation.';box.append(p);
-  }
+  $('maxDigits').value=maxDigits;
+  $('maxDigits').disabled=busy;
+  $('settingsNote').textContent=busy?'Finish or cancel your current session to change settings.':`Keep at least one operation enabled. Your current Rank ceiling is ${speedRank(maxDigits*20)} (${maxDigits*20}/100).`;
+  $('assessmentSize').textContent=`${operations.length*maxDigits*2} questions with your current settings.`;
+  $('speedStart').disabled=busy;
+  $('speedStats').disabled=!!speedRun||(questionStart!==null&&!$('quizView').classList.contains('hidden'));
 }
+$('practiceSettings').addEventListener('change',()=>{
+  if(data.session||speedRun)return;
+  const operations=optionInputs.filter(input=>input.checked).map(input=>input.value);
+  const maxDigits=Number($('maxDigits').value);
+  if(!operations.length||!digitBands.includes(maxDigits)){renderSettings();return}
+  data.settings={operations,maxDigits};save();render();
+});
+
+// History is comparable only at the same digit ceiling. Overall history also needs the same operations.
+function rankTimeline(skill=''){
+  const {operations,maxDigits}=data.settings,scope=rankScope(),ceiling=maxDigits*20;
+  const entries=[];
+  for(const test of data.speedTests){
+    if(test.protocol!==3||test.maxDigits!==maxDigits)continue;
+    const sameOperations=test.operations.length===operations.length&&operations.every(n=>test.operations.includes(n));
+    if(skill?!test.operations.includes(skill):!sameOperations)continue;
+    const tested=skill?[skill]:operations;
+    const scores=tested.map(n=>bandRank(digitBands.slice(0,maxDigits).map(digits=>
+      speedScore(test.rows.filter(row=>row.skill===n&&row.digits===digits))),maxDigits));
+    entries.push({time:Date.parse(test.date),kind:'Assessment',score:Math.round(scores.reduce((sum,n)=>sum+n,0)/scores.length)});
+  }
+  for(const [date,day] of Object.entries(data.days)){
+    if(!day.scope)continue;
+    const [limit,enabled]=day.scope.split(':');
+    const matches=skill?Number(limit)===maxDigits&&enabled?.split(',').includes(skill):day.scope===scope;
+    const score=skill?day.operationRanks?.[skill]:day.rank;
+    const time=day.recordedAt??Date.parse(date+'T23:59:59');
+    if(matches&&Number.isFinite(score)&&Number.isFinite(time))entries.push({time,kind:'Practice',score:Math.round(clamp(score,0,ceiling))});
+  }
+  entries.sort((a,b)=>a.time-b.time);
+  const rank=rankInfo(skill||undefined);
+  const pending=data.session?.results.some(row=>!row.guided&&(!skill||row.skill===skill));
+  if(rank.number&&(pending||entries.at(-1)?.score!==rank.progress))entries.push({time:Date.now(),kind:'Current',score:rank.progress});
+  return entries.slice(-10);
+}
+
+const chartTips={
+  Addition:'Make a ten first. For 48 + 27, add 2 to reach 50, then add the remaining 25.',
+  Subtraction:'Round and compensate. For 83 − 29, subtract 30 and add 1 back.',
+  Multiplication:'Split the larger number. For 24 × 7, add 20 × 7 and 4 × 7.',
+  Division:'Reverse the multiplication. For 96 ÷ 6, ask what times 6 gives 96.',
+  Percentages:'Start with a fraction or 10%. For 25% of 160, take one quarter.'
+};
+const chartDate=new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',year:'numeric'});
+function chartText(tag,value,className){
+  const el=document.createElement(tag);el.textContent=value;
+  if(className)el.className=className;
+  return el;
+}
+function renderRankTrend(skill){
+  const box=$('chartHistory'),entries=rankTimeline(skill),ceiling=data.settings.maxDigits*20;
+  box.replaceChildren();
+  if(!entries.length){
+    box.append(chartText('p','Complete an assessment or independent practice to start this chart.','small'));
+    return;
+  }
+  box.append(chartText('p',entries.length===1?'First checkpoint. Another comparable result will show the direction of change.':'Up to 10 checkpoints in order. Gold marks assessments, green marks practice, and white marks the current result.','small'));
+  const x=i=>entries.length===1?209:36+i*346/(entries.length-1);
+  const y=score=>120-score/ceiling*102;
+  const ticks=[0,Math.round(ceiling/2),ceiling];
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 400 132');
+  svg.setAttribute('class','chart-plot');
+  svg.setAttribute('role','img');
+  svg.setAttribute('aria-label',`${skill||'Overall'} Rank trend. First score ${entries[0].score} and latest score ${entries.at(-1).score}, on a scale of zero to ${ceiling}.`);
+  svg.innerHTML=ticks.map(value=>`<line class="grid-line" x1="32" x2="390" y1="${y(value)}" y2="${y(value)}"></line><text x="4" y="${y(value)+4}">${value}</text>`).join('')+
+    (entries.length>1?`<polyline points="${entries.map((row,i)=>`${x(i)},${y(row.score)}`).join(' ')}"></polyline>`:'')+
+    entries.map((row,i)=>`<circle class="${row.kind.toLowerCase()}-dot" cx="${x(i)}" cy="${y(row.score)}" r="4.5"></circle>`).join('');
+  const axis=document.createElement('div');axis.className='chart-axis';
+  axis.append(chartText('span',chartDate.format(entries[0].time),'small'));
+  if(entries.length>1)axis.append(chartText('span',chartDate.format(entries.at(-1).time),'small'));
+  const details=document.createElement('details');
+  details.append(chartText('summary','Checkpoint values'));
+  const list=document.createElement('ol');list.className='chart-checkpoints';
+  for(const row of entries)list.append(chartText('li',`${chartDate.format(row.time)} · ${row.kind} · ${row.score}/100 Rank score`,'small'));
+  details.append(list);box.append(svg,axis,details);
+}
+
+function renderRankCharts(){
+  const {operations,maxDigits}=data.settings,ceiling=maxDigits*20,rank=rankInfo();
+  $('chartScope').textContent=`${operations.length} enabled ${operations.length===1?'operation':'operations'} · up to ${maxDigits} digits · Rank ceiling ${ceiling}/100`;
+  const rows=operations.map(skill=>{
+    const history=rankTimeline(skill);
+    const change=history.length>1?history.at(-1).score-history.at(-2).score:null;
+    return {skill,rank:rankInfo(skill),change};
+  });
+  const measured=rows.filter(row=>row.rank.number);
+  const focus=[...measured].sort((a,b)=>a.rank.progress-b.rank.progress)[0];
+  const gains=measured.filter(row=>row.change>0).sort((a,b)=>b.change-a.change);
+  const drops=measured.filter(row=>row.change<0).sort((a,b)=>a.change-b.change);
+  const compared=measured.some(row=>row.change!==null);
+  const highlights=$('chartHighlights');highlights.replaceChildren();
+  for(const [caption,title,detail,tone] of [
+    ['Current Rank',rank.name,rank.number?`${rank.progress}/100 Rank score`:'Start practice to establish Rank'],
+    ['Biggest gain',gains[0]?.skill??'—',gains.length?`+${gains[0].change} Rank points`:compared?'No recent gains':'More history needed','chart-up'],
+    ['Biggest drop',drops[0]?.skill??'—',drops.length?`${drops[0].change} Rank points`:compared?'No recent drops':'More history needed','chart-down'],
+    ['Practice priority',focus?.skill??'—',focus?`${practiceDigits(focus.skill)}-digit band · lowest measured Rank`:'Finish a measured solve']
+  ]){
+    const card=document.createElement('div');card.className='chart-card';
+    card.append(chartText('div',caption,'small'),chartText('strong',title,tone),chartText('div',detail,'small'));
+    highlights.append(card);
+  }
+  const operationsChart=$('chartOperations');operationsChart.replaceChildren();
+  for(const row of rows){
+    const item=document.createElement('div');item.className='chart-operation';
+    const delta=row.change===null?'Needs history':row.change===0?'Steady':`${row.change>0?'Up':'Down'} ${Math.abs(row.change)} pts`;
+    const summary=row.rank.number?`${row.rank.progress}/100 · ${delta}`:'Unmeasured';
+    item.append(chartText('strong',row.skill),chartText('span',summary,'small chart-operation-score'+(row.change>0?' chart-up':row.change<0?' chart-down':'')));
+    if(row.rank.number){
+      item.append(chartText('span',row.rank.name,'small'));
+      const bar=document.createElement('meter');bar.min=0;bar.max=ceiling;bar.value=row.rank.progress;
+      bar.setAttribute('aria-label',`${row.skill} Rank score ${row.rank.progress} out of ${ceiling} available points`);
+      item.append(bar);
+    }
+    operationsChart.append(item);
+  }
+  const select=$('chartMetric'),previous=select.value;
+  select.replaceChildren(new Option('Overall Rank',''),...operations.map(skill=>new Option(skill,skill)));
+  if(operations.includes(previous))select.value=previous;
+  renderRankTrend(select.value);
+
+  const bands=digitBands.slice(0,maxDigits),table=document.createElement('table');
+  table.className='chart-table';table.setAttribute('aria-label','Operation scores by digit band');
+  const head=table.createTHead().insertRow();
+  for(const digits of [0,...bands]){
+    const th=chartText('th',digits?`${digits}d`:'Operation');th.scope='col';
+    if(digits)th.setAttribute('aria-label',`${digits}-digit band`);
+    head.append(th);
+  }
+  const body=table.createTBody();
+  for(const skill of operations){
+    const row=body.insertRow(),label=chartText('th',skill);label.scope='row';row.append(label);
+    for(const digits of bands){
+      const score=data.bands[skill][digits-1],cell=row.insertCell();
+      const state=score===null?'Unmeasured':score>=BAND_ADVANCE?'Ready to advance':'Needs work';
+      cell.textContent=score===null?'—':String(Math.round(score));
+      cell.className=score===null?'band-empty':score>=BAND_ADVANCE?'band-ready':'band-focus';
+      cell.title=`${digits} digits · ${state} · ${speedTargets[skill][digits-1]}s target`;
+    }
+  }
+  $('chartBands').replaceChildren(table);
+  $('chartFocus').textContent=focus?`Try this for ${focus.skill.toLowerCase()}: ${chartTips[focus.skill]}`:'A dash means there is no measurement for that band yet.';
+}
+
 function speedNext(){
   const q=speedRun.questions[speedRun.rows.length];
-  $('speedStatus').textContent='Question '+(speedRun.rows.length+1)+' / 40 · '+q.skill+' · target '+q.target+'s';
-  $('speedQuestion').textContent=q.text;
+  $('speedStatus').textContent=`Question ${speedRun.rows.length+1} / ${speedRun.questions.length} · ${q.skill} · ${q.digits} digit · target ${q.target}s`;
+  $('speedQuestion').textContent='Ready when you are';$('speedTime').textContent='';
   $('speedAnswer').value='';$('speedAnswer').setCustomValidity('');
-  speedSeconds=null;
-  $('speedEntry').hidden=true;$('speedAnswer').disabled=true;$('speedCheck').hidden=true;$('speedSolved').hidden=false;$('speedSolved').focus();
-  speedStarted=performance.now();
+  speedStarted=null;speedSeconds=null;
+  $('speedEntry').hidden=true;$('speedAnswer').disabled=true;$('speedCheck').hidden=true;
+  $('speedSolved').hidden=true;$('speedSkip').hidden=true;$('speedReady').hidden=false;$('speedReady').focus();
 }
 $('speedStart').addEventListener('click',()=>{
-  if(speedRun)return;
-  if(data.session){$('speedStatus').textContent='Finish your daily practice before starting a separate assessment.';return}
-  const questions=[];
-  for(let digits=1;digits<=4;digits++){
-    for(const skill of Object.keys(speedTargets)){
-      for(let repeat=0;repeat<2;repeat++){
-        const low=digits===1?2:10**(digits-1),high=10**digits-1;
-        let a=rand(low,high),b=rand(low,high),answer,text;
-        if(skill==='Addition'){answer=a+b;text=a+' + '+b}
-        if(skill==='Subtraction'){if(a<b)[a,b]=[b,a];answer=a-b;text=a+' − '+b}
-        if(skill==='Multiplication'){b=rand(2,9);answer=a*b;text=a+' × '+b}
-        if(skill==='Percentages'){a=4*rand(Math.ceil(low/4),Math.floor(high/4));b=pick([10,25,50]);answer=a*b/100;text=b+'% of '+a}
-        if(skill==='Division'){b=rand(2,9);answer=a;text=(a*b)+' ÷ '+b}
-        questions.push({skill,digits,answer,text,target:speedTargets[skill][digits-1]});
-      }
-    }
+  if(speedRun||data.session)return;
+  const {operations,maxDigits}=data.settings,questions=[];
+  for(const digits of digitBands.slice(0,maxDigits)){
+    for(const skill of operations)questions.push(makeProblem(skill,digits),makeProblem(skill,digits));
   }
-  speedRun={questions,rows:[],interrupted:false};$('speedForm').hidden=false;$('speedReport').replaceChildren();$('startBtn').disabled=true;speedNext();
+  speedRun={questions,rows:[]};
+  $('speedForm').hidden=false;$('startBtn').disabled=true;
+  renderSettings();speedNext();
+});
+$('speedReady').addEventListener('click',()=>{
+  if(!speedRun||speedStarted!==null||document.hidden)return;
+  $('speedQuestion').textContent=speedRun.questions[speedRun.rows.length].text;
+  $('speedReady').hidden=true;$('speedSolved').hidden=false;$('speedSkip').hidden=false;
+  $('speedSolved').focus();speedStarted=performance.now();
 });
 $('speedSolved').addEventListener('click',()=>{
-  if(!speedRun||speedSeconds!==null)return;
+  if(!speedRun||speedStarted===null||speedSeconds!==null)return;
   speedSeconds=Math.max(2,(performance.now()-speedStarted)/1000);
+  $('speedTime').textContent=`${speedSeconds.toFixed(1)}s solve time`;
   $('speedQuestion').textContent='Enter the answer you solved.';
   $('speedSolved').hidden=true;$('speedEntry').hidden=false;$('speedAnswer').disabled=false;$('speedCheck').hidden=false;$('speedAnswer').focus();
 });
 function speedSubmit(skip){
-  if(!speedRun||(!skip&&speedSeconds===null))return;
+  if(!speedRun||speedStarted===null||(!skip&&speedSeconds===null))return;
   const raw=$('speedAnswer').value.trim();
   if(!skip&&!/^-?\d+(?:\.\d+)?$/.test(raw)){$('speedAnswer').setCustomValidity('Enter a number; decimals are allowed.');$('speedAnswer').reportValidity();return}
   const q=speedRun.questions[speedRun.rows.length];
-  speedRun.rows.push({skill:q.skill,digits:q.digits,target:q.target,seconds:speedSeconds===null?Math.max(2,(performance.now()-speedStarted)/1000):speedSeconds,correct:!skip&&Math.abs(Number(raw)-q.answer)<1e-8});
-  if(speedRun.rows.length<40){speedNext();return}
-  $('speedForm').hidden=true;
-  if(speedRun.interrupted){$('speedStatus').textContent='Test interrupted by leaving the tab. Retake for a comparable result.';speedRender()}
-  else{
-    data.speedTests=[...(data.speedTests||[]),{protocol:2,date:new Date().toISOString(),rows:speedRun.rows}].slice(-40);for(const skill of NAMES){
-      data.skills[skill].level=1+Math.min(7,Math.floor(speedScore(speedRun.rows.filter(r=>r.skill===skill))*8/101));
-      data.skills[skill].history=[];
+  const correct=!skip&&Math.abs(Number(raw)-q.answer)<1e-8;
+  speedRun.rows.push({skill:q.skill,digits:q.digits,target:q.target,seconds:speedSeconds??Math.max(2,(performance.now()-speedStarted)/1000),correct});
+  if(speedRun.rows.length<speedRun.questions.length){speedNext();return}
+  const {operations,maxDigits}=data.settings;
+  const {rows}=speedRun;
+  data.speedTests=[...data.speedTests,{protocol:3,date:new Date().toISOString(),operations:[...operations],maxDigits,rows}].slice(-40);
+  for(const skill of operations){
+    for(const digits of digitBands.slice(0,maxDigits)){
+      data.bands[skill][digits-1]=speedScore(rows.filter(row=>row.skill===skill&&row.digits===digits));
     }
-    save();
-    $('speedStatus').textContent='Assessment complete. Your weakest operation will receive extra daily practice.';speedRender();
+    // The assessment supplies the starting point for the next practice question.
+    data.skills[skill].history=data.skills[skill].history.map(({points,...row})=>row);
   }
-  speedRun=null;render();
+  save();
+  cancelSpeedTest('Starting Rank updated. Open My Rank & Charts to review your results.');
 }
 $('speedForm').addEventListener('submit',e=>{e.preventDefault();speedSubmit(false)});
 $('speedAnswer').addEventListener('input',()=>$('speedAnswer').setCustomValidity(''));
 $('speedSkip').addEventListener('click',()=>speedSubmit(true));
-function cancelSpeedTest(message='Test cancelled. No result saved.'){speedRun=null;$('speedForm').hidden=true;$('speedStatus').textContent=message;speedRender();render()}
+function cancelSpeedTest(message='Test cancelled. No result saved.'){
+  speedRun=null;$('speedForm').hidden=true;$('speedStatus').textContent=message;render();
+}
 $('speedCancel').addEventListener('click',()=>cancelSpeedTest());
-$('speedStats').addEventListener('click',speedRender);
-document.addEventListener('visibilitychange',()=>{if(speedRun&&document.hidden)speedRun.interrupted=true});
+$('speedStats').addEventListener('click',()=>{
+  renderRankCharts();
+  const dialog=$('chartsDialog');
+  dialog.showModal();
+  dialog.scrollTop=0;
+});
+$('chartMetric').addEventListener('change',()=>renderRankTrend($('chartMetric').value));
+document.addEventListener('visibilitychange',()=>{
+  if(speedRun&&speedStarted!==null&&speedSeconds===null&&document.hidden)cancelSpeedTest('Test interrupted by leaving the tab while solving. Retake for a fresh result.');
+});
 
 $('rankName').addEventListener('click',()=>{
   $('rankList').replaceChildren();

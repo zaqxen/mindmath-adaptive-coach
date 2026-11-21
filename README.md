@@ -10,57 +10,55 @@ MindMath Quest is a free, offline-first, single-page browser trainer. It detects
 
 ## Why it works differently
 
-- **Five minutes or 12 questions per day**, whichever happens first. Leave early if you want; the timer pauses when you switch tabs.
+- **Five minutes or 12 questions per day**, whichever happens first. The timer only runs while a question is visible for solving. You can end early.
 - **15 techniques across five areas:** addition, subtraction, multiplication, division, and percentages.
 - **Personalized weak-spot detection:** incorrect answers, repeated hints, and slow independent solutions inform what to practice next.
 - **Step-by-step, then solo:** see a worked method after a mistake, get similar questions, and gradually lose the training wheels as you improve.
-- **Eight internal practice difficulties per area:** promotion requires sustained accurate *independent* performance; a level may drop when your fundamentals need review.
-- **Game progress:** receive small XP rewards for practice and a bigger reward for independent correct answers. Complete one approachable daily quest, build correct-answer combos, unlock 11 trophies. A separate assessment sets your combined performance Rank.
+- **Adaptive digit bands:** each operation moves up or down through one- to five-digit problems based on independent solving performance.
+- **Game progress:** receive small XP rewards for practice and a bigger reward for independent correct answers. Complete one approachable daily quest, build correct-answer combos, unlock 11 trophies. An optional assessment estimates your starting Rank. Daily practice updates it.
 - **Gentle by design:** no ads, payments, login, cloud analytics, endless feeds, or penalties for taking days off. Earned trophies are permanent.
 
 ### A tiny session
 
 1. Open the page. You'll see your suggested focus and today's micro-quest.
 2. Hit **Start today's session**.
-3. Calculate mentally. Use **Show a technique** or reveal steps whenever you need help.
-4. Review the answer and try another. The game records whether a correct answer needed guidance.
+3. Press **Ready** to reveal a question and start its timer. Use **Show a technique** when you need help.
+4. Press **Solved it** when you know the answer, then type it. Review the result and use **Next** to get ready for another question.
 5. After five minutes or twelve answers, get a short summary, XP, and any earned trophies.
 
-Rank combines correct answers and solving speed. **XP never controls Rank or math difficulty**. The assessment sets starting difficulty per operation; daily coaching then adjusts it using recent practice.
+Rank combines correct answers and solving speed. **XP never controls Rank or math difficulty**. The assessment estimates starting difficulty per operation. Independent solves in daily practice update both Rank and question difficulty.
 
 ## Game mechanics at a glance
 
 | Mechanic | How it works |
 | --- | --- |
-| XP | Correct independent answers earn more than guided answers; incorrect attempts get a tiny effort point; a level-up earns a one-off bonus. |
+| XP | Correct independent answers earn more than guided answers; incorrect attempts get a tiny effort point; advancing a digit band earns a one-off bonus. |
 | Daily quest | One small goal based on your needs, or a rotating general challenge. Complete it once for bonus XP. |
 | Combo | Consecutive correct answers earn a modest bonus. A miss resets only the current combo. |
-| Rank | Twenty motivational titles from Foundations through 1st Grader to Genius, based on the latest complete assessment. |
+| Rank | Twenty motivational titles from Foundations through 1st Grader to Genius, based on the assessment baseline and recent independent practice. |
 | Trophy cabinet | Eleven achievements for showing up, practicing independently, using guidance, exploring skills and increasing mastery. |
-| Operation ranks | Addition, subtraction, multiplication, division and percentages each show a Rank. Internal practice difficulty adapts separately. |
+| Operation ranks | Addition, subtraction, multiplication, division and percentages each show a Rank. Each operation adapts independently. |
 | Own pace | No day streak or accuracy percentage. Missed days do not remove points, rank, or trophies. |
-
-**Difficulty rules:** Promotion requires at least 9/10 recent correct answers in a skill, at least 8 unaided correct answers, reasonable solving time, variety across techniques, and no detected weak technique in that skill. After ten recent answers at the current level, 5 or fewer correct leads to a gentler level. One wrong answer cannot demote you.
 
 ## Rank assessment and charts
 
-Select **Take speed test** for 40 questions: two per digit band (1–4), across five operations. Press **Solved it** once you have the answer in mind. The question disappears, then you enter the answer. Entry time is excluded; reading and button reaction are still included. This is a self-reported solve signal, not a direct measurement of mental computation. Switching tabs invalidates that run; cancellation saves no result.
+Use **Practice and assessment settings** to choose the operations and the largest operand, from one to five digits. For percentages the limit applies to the base amount. Both activities honor the same settings. Rank averages the enabled operations, and each digit band adds up to 20 points, so one-digit work tops out at 20 and three-digit work at 60. Settings can change between sessions.
 
-Each answer earns `100 × min(1, targetSeconds / max(2, solveSeconds))` points when correct, or zero when incorrect/skipped. The mean is the combined Rank score. Sub-two-second responses receive no extra credit. The app-defined full-score targets (seconds for 1/2/3/4 digits) are:
+**Take speed test** gives two questions per selected operation and digit band as an initial estimate. In both activities, **Ready** reveals the question and **Solved it** stops the timer before entry. Reading and button reaction are included. A tab switch during solving discards the practice question or cancels the assessment. Previous completed practice answers stay saved.
+
+A correct answer earns `100 × min(1, targetSeconds / max(2, solveSeconds))` timing points. Incorrect answers earn zero. App-defined full-score targets in seconds for 1/2/3/4/5 digits are:
 
 | Operation | Targets | Question format |
 | --- | --- | --- |
-| Addition | 2 / 4 / 7 / 10 | Two numbers of the selected length |
-| Subtraction | 2 / 5 / 8 / 12 | Two numbers of the selected length |
-| Multiplication | 2 / 6 / 10 / 15 | Selected-length number times one digit |
-| Division | 2 / 6 / 11 / 17 | Reverses multiplication; the quotient has the selected length |
-| Percentages | 2 / 5 / 8 / 12 | 10%, 25% or 50% of a selected-length multiple of four |
+| Addition | 2 / 4 / 7 / 10 / 14 | Add numbers up to the selected length |
+| Subtraction | 2 / 5 / 8 / 12 / 17 | Subtract numbers up to the selected length |
+| Multiplication | 2 / 6 / 10 / 15 / 21 | Selected-length number times a small multiplier |
+| Division | 2 / 6 / 11 / 17 / 24 | Selected-length dividend divided by one digit |
+| Percentages | 2 / 5 / 8 / 12 / 17 | Find a basic percentage of the selected-length amount |
 
-Every five score points unlocks the next title, up to Genius at 95. Click the dashboard Rank for the full ladder. **These names are motivational game titles, not validated age, occupation, IQ or population comparisons.** Two questions per band give a provisional result; randomly generated questions vary in difficulty. The linked research describes basic-fact timing and response stages, not norms for this assessment.
+Each independent practice answer moves its band score toward the new result. A band at 85 timing points unlocks the next digit length. A difficult solve can bring back a shorter problem. Guided practice provides coaching without changing Rank. Click Rank for all 20 titles. Grade and career titles are motivational. They lack validation against real-world groups.
 
-**My ranks & charts** shows operation scores, digit-band ranks, technique tips and recent assessment history. The latest complete assessment resets each operation's practice difficulty and directs extra questions toward the lowest-scoring operation. Retake the test to update Rank; practice XP does not inflate it.
-
-Older assessments that included typing time remain in backups but are excluded from the new Rank and chart comparisons. Existing topic histories and practice totals are retained; completing an assessment restarts the recent skill promotion window at the newly assigned difficulty. Imports validate complete operation/digit coverage. Importing or resetting progress cancels any active assessment.
+**My Rank & Charts** opens a dashboard with operation comparison, recent gains and drops, a digit-band grid, and a selectable Rank history for the overall score or one operation. Overall history uses the same operation selection and digit ceiling. Operation history compares checkpoints at the same digit ceiling, and records practice only when the operation received an independent answer. Older saves keep their overall history and gain operation checkpoints as new practice is completed. Changing settings preserves excluded operation data and results from longer bands. Existing backups keep their practice totals, trophies, and historical tests. The previous assessment can seed matching digit bands. Division previously counted the quotient, so new division results use the displayed dividend.
 
 ## Run it
 
